@@ -23,7 +23,7 @@ const initials = (name: string) =>
 
 function copyAsText(intake: IntakeData, profile: Profile) {
   const lines = [
-    `UNMAPPED Profile — ${intake.name || "Anonymous"} (${intake.country})`,
+    `Skill Bridge Profile — ${intake.name || "Anonymous"} (${intake.country})`,
     `Date: ${new Date().toLocaleDateString()}`,
     "",
     `Summary: ${profile.summary}`,
