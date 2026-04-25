@@ -7,6 +7,8 @@ import { toSecondPerson } from "@/lib/voice";
 import MetricsGrid from "./MetricsGrid";
 import OpportunityCard from "./OpportunityCard";
 import SkillRow from "./SkillRow";
+import JobsNearYou from "./JobsNearYou";
+import LaborDemandPanel from "./LaborDemandPanel";
 import { useState, useMemo } from "react";
 import { toast } from "sonner";
 import { Copy, RefreshCw, AlertTriangle } from "lucide-react";
@@ -147,6 +149,9 @@ export default function ResultsView({ intake, profile, isDemo, onRestart }: Prop
             {youth.opportunities.map((o, i) => <OpportunityCard key={i} op={o} />)}
           </div>
 
+          {/* Real job openings from dataset */}
+          <JobsNearYou intake={intake} />
+
           <div className="flex flex-wrap justify-center gap-3 pt-2">
             <Button variant="outline" onClick={() => copyAsText(intake, profile)}>
               <Copy className="mr-2 h-4 w-4" /> Copy profile as plain text
@@ -215,6 +220,9 @@ export default function ResultsView({ intake, profile, isDemo, onRestart }: Prop
               <p className="text-sm">{profile.wittgensteinSignal}</p>
             </Card>
           </div>
+
+          {/* Aggregate labor demand from dataset */}
+          <LaborDemandPanel country={intake.country} />
 
           <div className="flex justify-center pt-2">
             <Button variant="ghost" onClick={onRestart}>
