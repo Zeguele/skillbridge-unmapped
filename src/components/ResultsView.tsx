@@ -3,10 +3,11 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { COUNTRY_DATA } from "@/lib/countryData";
 import type { IntakeData, Profile } from "@/lib/types";
+import { toSecondPerson } from "@/lib/voice";
 import MetricsGrid from "./MetricsGrid";
 import OpportunityCard from "./OpportunityCard";
 import SkillRow from "./SkillRow";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { toast } from "sonner";
 import { Copy, RefreshCw, AlertTriangle } from "lucide-react";
 
@@ -52,6 +53,17 @@ export default function ResultsView({ intake, profile, isDemo, onRestart }: Prop
   const [view, setView] = useState<"my" | "policy">("my");
   const stats = COUNTRY_DATA[intake.country];
 
+  // Defensive sanitization: ensure youth-facing text is always in second person.
+  const youth = useMemo(() => {
+    const name = intake.name;
+    return {
+      summary: toSecondPerson(profile.summary, name),
+      portabilityReason: toSecondPerson(profile.portabilityReason, name),
+      skills: profile.skills.map(s => ({ ...s, description: toSecondPerson(s.description, name) })),
+      opportunities: profile.opportunities.map(o => ({ ...o, description: toSecondPerson(o.description, name) })),
+    };
+  }, [profile, intake.name]);
+
   return (
     <div className="mx-auto w-full max-w-4xl space-y-6">
       {isDemo && (
@@ -87,7 +99,7 @@ export default function ResultsView({ intake, profile, isDemo, onRestart }: Prop
               <div className="min-w-0 flex-1">
                 <h2 className="text-xl font-semibold">{intake.name || "Your profile"}</h2>
                 <p className="text-sm text-muted-foreground">{intake.country} · {new Date().toLocaleDateString()}</p>
-                <p className="mt-3 text-sm leading-relaxed">{profile.summary}</p>
+                <p className="mt-3 text-sm leading-relaxed">{youth.summary}</p>
               </div>
             </div>
             <p className="mt-5 border-t border-border pt-3 text-xs text-muted-foreground">
@@ -120,7 +132,7 @@ export default function ResultsView({ intake, profile, isDemo, onRestart }: Prop
             </p>
 
             <div className="-mt-1">
-              {profile.skills.map((s, i) => <SkillRow key={i} skill={s} />)}
+              {youth.skills.map((s, i) => <SkillRow key={i} skill={s} />)}
             </div>
 
             {/* Portability — simplified */}
@@ -132,7 +144,7 @@ export default function ResultsView({ intake, profile, isDemo, onRestart }: Prop
           {/* Opportunities */}
           <div className="space-y-3">
             <h3 className="text-base font-semibold">Realistic opportunities</h3>
-            {profile.opportunities.map((o, i) => <OpportunityCard key={i} op={o} />)}
+            {youth.opportunities.map((o, i) => <OpportunityCard key={i} op={o} />)}
           </div>
 
           <div className="flex flex-wrap justify-center gap-3 pt-2">
