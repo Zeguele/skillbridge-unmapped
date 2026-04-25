@@ -221,6 +221,9 @@ export default function ResultsView({ intake, profile, isDemo, onRestart }: Prop
             </Card>
           </div>
 
+          {/* Aggregate labor demand from dataset */}
+          <LaborDemandPanel country={intake.country} />
+
           <div className="flex justify-center pt-2">
             <Button variant="ghost" onClick={onRestart}>
               <RefreshCw className="mr-2 h-4 w-4" /> Start over
