@@ -20,11 +20,6 @@ interface Props {
 const initials = (name: string) =>
   (name?.trim() || "Y N").split(/\s+/).slice(0, 2).map(p => p[0]?.toUpperCase()).join("");
 
-const portColor = (p: Profile["portability"]) =>
-  p === "High" ? "bg-primary text-primary-foreground"
-    : p === "Medium" ? "bg-[hsl(var(--info))] text-white"
-    : "bg-muted text-foreground";
-
 function copyAsText(intake: IntakeData, profile: Profile) {
   const lines = [
     `UNMAPPED Profile — ${intake.name || "Anonymous"} (${intake.country})`,
@@ -95,55 +90,49 @@ export default function ResultsView({ intake, profile, isDemo, onRestart }: Prop
                 <p className="mt-3 text-sm leading-relaxed">{profile.summary}</p>
               </div>
             </div>
-            <div className="mt-5 flex flex-wrap gap-2">
-              <Badge className="bg-[hsl(var(--info))] text-white hover:bg-[hsl(var(--info))]">ISCO-08 · {profile.isco.code} · {profile.isco.title}</Badge>
-              <Badge className="bg-primary text-primary-foreground hover:bg-primary">ESCO · {profile.esco.label}</Badge>
-              <Badge className="bg-[hsl(var(--warning))] text-white hover:bg-[hsl(var(--warning))]">O*NET · {profile.onet.code} · {profile.onet.title}</Badge>
-            </div>
-            <p className="mt-3 text-xs text-muted-foreground">
-              These are international standards. Any employer or training program that uses them can verify your skills across borders.
+            <p className="mt-5 border-t border-border pt-3 text-xs text-muted-foreground">
+              Your skills are mapped to international standards — any employer or program that uses these systems can verify them.
             </p>
           </Card>
 
           {/* Skills */}
           <Card className="p-5 sm:p-6">
-            <h3 className="mb-2 text-base font-semibold">Your skills</h3>
+            <h3 className="mb-3 text-base font-semibold">Your skills</h3>
+
+            {/* Color legend */}
+            <div className="mb-3 flex flex-wrap gap-x-5 gap-y-2 rounded-md bg-muted/50 p-3 text-xs">
+              <span className="flex items-center gap-2">
+                <span className="h-2.5 w-2.5 rounded-full bg-[hsl(var(--skill-durable))]" />
+                <span>Strong skill — you're ready to use this</span>
+              </span>
+              <span className="flex items-center gap-2">
+                <span className="h-2.5 w-2.5 rounded-full bg-[hsl(var(--skill-developing))]" />
+                <span>Growing skill — you're building this</span>
+              </span>
+              <span className="flex items-center gap-2">
+                <span className="h-2.5 w-2.5 rounded-full bg-[hsl(var(--skill-informal))]" />
+                <span>Life skill — you learned this outside school or work</span>
+              </span>
+            </div>
+
+            <p className="mb-2 text-xs text-muted-foreground">
+              "How future-proof is this skill" shows how likely it is to stay valuable as technology changes.
+            </p>
+
             <div className="-mt-1">
               {profile.skills.map((s, i) => <SkillRow key={i} skill={s} />)}
             </div>
-          </Card>
 
-          {/* Portability */}
-          <Card className="p-5 sm:p-6">
-            <div className="flex flex-wrap items-center gap-3">
-              <span className="text-sm font-medium">Portability rating:</span>
-              <Badge className={portColor(profile.portability)}>{profile.portability}</Badge>
+            {/* Portability — simplified */}
+            <div className="mt-5 rounded-md bg-accent p-4 text-sm">
+              Your skills can travel with you. This profile is mapped to standards used in 150+ countries — so if you move or apply elsewhere, your experience still counts.
             </div>
-            <p className="mt-2 text-sm text-muted-foreground">{profile.portabilityReason}</p>
           </Card>
-
-          {/* Metrics */}
-          <div>
-            <h3 className="mb-3 text-base font-semibold">{intake.country} — labor market context</h3>
-            <MetricsGrid stats={stats} country={intake.country} />
-          </div>
 
           {/* Opportunities */}
           <div className="space-y-3">
             <h3 className="text-base font-semibold">Realistic opportunities</h3>
             {profile.opportunities.map((o, i) => <OpportunityCard key={i} op={o} />)}
-          </div>
-
-          {/* Signals */}
-          <div className="grid gap-3 md:grid-cols-2">
-            <Card className="p-5">
-              <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Signal 1 · ILO ILOSTAT</div>
-              <p className="text-sm">{profile.signal1}</p>
-            </Card>
-            <Card className="p-5">
-              <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Signal 2 · World Bank STEP / ILO task indices</div>
-              <p className="text-sm">{profile.signal2}</p>
-            </Card>
           </div>
 
           <div className="flex flex-wrap justify-center gap-3 pt-2">
@@ -160,6 +149,19 @@ export default function ResultsView({ intake, profile, isDemo, onRestart }: Prop
           <div className="rounded-lg border border-border bg-secondary p-3 text-sm">
             Aggregate view for program officers — {intake.country}.
           </div>
+
+          {/* Taxonomy codes — moved here from My view */}
+          <Card className="p-5">
+            <h3 className="mb-2 text-sm font-semibold">International taxonomy mapping</h3>
+            <div className="flex flex-wrap gap-2">
+              <Badge className="bg-[hsl(var(--info))] text-white hover:bg-[hsl(var(--info))]">ISCO-08 · {profile.isco.code} · {profile.isco.title}</Badge>
+              <Badge className="bg-primary text-primary-foreground hover:bg-primary">ESCO · {profile.esco.label}</Badge>
+              <Badge className="bg-[hsl(var(--warning))] text-white hover:bg-[hsl(var(--warning))]">O*NET · {profile.onet.code} · {profile.onet.title}</Badge>
+            </div>
+            <p className="mt-3 text-xs text-muted-foreground">
+              Portability: {profile.portability} — {profile.portabilityReason}
+            </p>
+          </Card>
 
           <MetricsGrid stats={stats} country={intake.country} />
 
