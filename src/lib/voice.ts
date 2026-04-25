@@ -34,18 +34,88 @@ export function toSecondPerson(text: string, name?: string | null): string {
     .replace(/\b(His|Hers|Theirs)\b/g, "Yours")
     .replace(/\b(hers|theirs)\b/g, "yours");
 
-  // 4) Verb agreement after a forced "You" rewrite
-  out = out
-    .replace(/\bYou has\b/g, "You have")
-    .replace(/\byou has\b/g, "you have")
-    .replace(/\bYou is\b/g, "You are")
-    .replace(/\byou is\b/g, "you are")
-    .replace(/\bYou was\b/g, "You were")
-    .replace(/\byou was\b/g, "you were")
-    .replace(/\bYou does\b/g, "You do")
-    .replace(/\byou does\b/g, "you do")
-    .replace(/\bYou goes\b/g, "You go")
-    .replace(/\byou goes\b/g, "you go");
+  // 4) Verb agreement after a forced "You" / "Your" rewrite.
+  // After "you" we need base-form verbs (you have, NOT you has).
+
+  // 4a) Irregular high-frequency verbs
+  const irregulars: Array<[RegExp, string]> = [
+    [/\bhas\b/g, "have"],
+    [/\bis\b/g, "are"],
+    [/\bwas\b/g, "were"],
+    [/\bdoes\b/g, "do"],
+    [/\bgoes\b/g, "go"],
+    [/\bhasn't\b/g, "haven't"],
+    [/\bisn't\b/g, "aren't"],
+    [/\bwasn't\b/g, "weren't"],
+    [/\bdoesn't\b/g, "don't"],
+    [/\bhas not\b/g, "have not"],
+    [/\bis not\b/g, "are not"],
+    [/\bwas not\b/g, "were not"],
+    [/\bdoes not\b/g, "do not"],
+  ];
+
+  // 4b) Regular -s / -es / -ies third-person verb endings.
+  // We strip the trailing s when the verb directly follows "you".
+  // Conservative: only fire when preceded by " you " / " You " (not "your").
+  const fixAfterYou = (s: string) =>
+    s.replace(
+      /\b(You|you)\s+([a-z]+?)(ies|es|s)\b/g,
+      (_m, pron: string, stem: string, suffix: string) => {
+        // Reconstruct the base form from the stripped suffix
+        let base = stem;
+        if (suffix === "ies") base = stem + "y";          // tries -> try
+        else if (suffix === "es") {
+          // Only "es" verbs that need the "e" gone: -sh/-ch/-x/-z/-s/-o stems keep nothing extra.
+          // For most: works -> work, watches -> watch, fixes -> fix, goes handled above.
+          if (/(sh|ch|x|z|ss|o)$/.test(stem)) base = stem;
+          else base = stem + "e"; // e.g. "likes" -> stem "lik" + "e" = "like"
+        }
+        // suffix === "s": just drop it (works -> work, runs -> run)
+        // Avoid mangling words like "yes", "this", "plus" which aren't verbs —
+        // but those won't appear right after "you" in normal sentences.
+        return `${pron} ${base}`;
+      },
+    );
+
+  // Apply irregulars only in the "you <verb>" position, not globally.
+  out = out.replace(/\b(You|you)\s+([A-Za-z']+(?:\s+not)?)\b/g, (m, pron: string, verb: string) => {
+    let v = verb;
+    for (const [re, repl] of irregulars) v = v.replace(re, repl);
+    return `${pron} ${v}`;
+  });
+
+  out = fixAfterYou(out);
+
+  // 4c) Sentence-level pass: in any sentence whose subject is "you",
+  // conjugate verbs that follow a coordinator ("and", "but", "or", ",")
+  // since they share the "you" subject.
+  const irregularMap: Record<string, string> = {
+    has: "have", "hasn't": "haven't",
+    is: "are", "isn't": "aren't",
+    was: "were", "wasn't": "weren't",
+    does: "do", "doesn't": "don't",
+    goes: "go",
+  };
+  const conjugateVerb = (verb: string): string => {
+    const lower = verb.toLowerCase();
+    if (irregularMap[lower]) {
+      const repl = irregularMap[lower];
+      return verb[0] === verb[0].toUpperCase() ? repl[0].toUpperCase() + repl.slice(1) : repl;
+    }
+    if (/ies$/.test(verb)) return verb.slice(0, -3) + "y";
+    if (/(sh|ch|x|z|ss|o)es$/.test(verb)) return verb.slice(0, -2);
+    if (/[bcdfghjklmnpqrstvwxyz]es$/.test(verb)) return verb.slice(0, -1);
+    if (/s$/.test(verb) && !/ss$/.test(verb)) return verb.slice(0, -1);
+    return verb;
+  };
+
+  out = out.replace(/[^.!?]*[.!?]?/g, (sentence) => {
+    if (!/\b(You|you)\b/.test(sentence)) return sentence;
+    return sentence.replace(
+      /\b(and|but|or)\s+([A-Za-z']+)\b/g,
+      (_m, conj: string, verb: string) => `${conj} ${conjugateVerb(verb)}`,
+    );
+  });
 
   return out;
 }
