@@ -12,12 +12,6 @@ const TYPE_LABEL: Record<ProfileSkill["type"], string> = {
   informal: "Life skill",
 };
 
-function barColor(r: number) {
-  if (r >= 67) return "bg-[hsl(var(--resilience-high))]";
-  if (r >= 34) return "bg-[hsl(var(--resilience-med))]";
-  return "bg-[hsl(var(--resilience-low))]";
-}
-
 export default function SkillRow({ skill }: { skill: ProfileSkill }) {
   return (
     <div className="border-b border-border py-3 last:border-0">
@@ -33,7 +27,7 @@ export default function SkillRow({ skill }: { skill: ProfileSkill }) {
           <span className="tabular-nums">{skill.resilience}%</span>
         </div>
         <div className="h-1.5 overflow-hidden rounded-full bg-muted">
-          <div className={`h-full rounded-full ${barColor(skill.resilience)}`} style={{ width: `${skill.resilience}%` }} />
+          <div className="h-full rounded-full bg-primary" style={{ width: `${skill.resilience}%` }} />
         </div>
       </div>
     </div>
