@@ -27,7 +27,7 @@ export default function SkillRow({ skill }: { skill: ProfileSkill }) {
           <span className="tabular-nums">{skill.resilience}%</span>
         </div>
         <div className="h-1.5 overflow-hidden rounded-full bg-muted">
-          <div className="h-full rounded-full bg-primary" style={{ width: `${skill.resilience}%` }} />
+          <div className="h-full rounded-full bg-foreground/70" style={{ width: `${skill.resilience}%` }} />
         </div>
       </div>
     </div>
