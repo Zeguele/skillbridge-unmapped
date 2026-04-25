@@ -112,6 +112,9 @@ Examples (follow exactly):
   BAD: "She could work as a tailor in a local workshop."
   GOOD: "You could work as a tailor in a local workshop."
 
+GRAMMAR — SUBJECT-VERB AGREEMENT (MANDATORY):
+All youth-facing text must use grammatically correct second person. The subject is always "you" — so the verb must always agree with "you". For example: "You have" (never "You has"), "You are" (never "You is"), "You possess" (never "You possesses"), "You do" (never "You does"), "Your skills suggest" (never "Your skills suggests"), "You also have informal experience" (never "You also has informal experience"). Double-check every sentence in summary, skills[].description, opportunities[].description, and portabilityReason for subject-verb agreement before returning. Never mix third-person verb forms with the subject "you".
+
 Policymaker-only fields (signal1, signal2, wittgensteinSignal, policySkillsGap, policyInterventions, policyDataLimits) MUST stay in third-person analytical language with data citations. Do NOT use "you" in those fields.
 
 Numeric rules:

@@ -49,7 +49,7 @@ const Index = () => {
             <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary text-primary-foreground">
               <Compass className="h-4 w-4" />
             </div>
-            <span className="text-lg font-semibold tracking-tight">UNMAPPED</span>
+            <span className="text-lg font-semibold tracking-tight">SKILL BRIDGE</span>
           </button>
           <span className="hidden text-xs text-muted-foreground sm:inline">World Bank hackathon</span>
         </div>
@@ -65,7 +65,7 @@ const Index = () => {
               Closing the distance between real skills and economic opportunity.
             </h1>
             <p className="mx-auto mt-4 max-w-xl text-pretty text-muted-foreground">
-              UNMAPPED maps your background — formal and informal — to international skill standards
+              Skill Bridge maps your background — formal and informal — to international skill standards
               and shows you realistic local opportunities backed by labor-market data.
             </p>
             <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
@@ -95,7 +95,7 @@ const Index = () => {
 
       <footer className="border-t border-border">
         <div className="mx-auto max-w-5xl px-4 py-4 text-center text-xs text-muted-foreground">
-          UNMAPPED · designed for low-bandwidth contexts · honest, grounded, plain language
+          Skill Bridge · designed for low-bandwidth contexts · honest, grounded, plain language
         </div>
       </footer>
     </div>
