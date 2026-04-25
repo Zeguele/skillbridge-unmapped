@@ -1,0 +1,185 @@
+import { useState } from "react";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
+import {
+  COUNTRIES, SELF_TAUGHT_SKILLS, LANGUAGES, EDUCATION_LEVELS,
+  DIGITAL_LEVELS, LANGUAGE_PREFS, type CountryKey,
+} from "@/lib/countryData";
+import type { IntakeData } from "@/lib/types";
+import { ArrowLeft, ArrowRight } from "lucide-react";
+
+interface Props {
+  initial?: IntakeData;
+  onSubmit: (data: IntakeData) => void;
+}
+
+const EMPTY: IntakeData = {
+  name: "", country: "Ghana", languagePref: "English",
+  education: "", fieldOfStudy: "", experience: "",
+  selfTaughtSkills: [], languages: [], digitalLevel: "", other: "",
+};
+
+export default function IntakeForm({ initial, onSubmit }: Props) {
+  const [step, setStep] = useState(1);
+  const [data, setData] = useState<IntakeData>(initial ?? EMPTY);
+
+  const update = <K extends keyof IntakeData>(k: K, v: IntakeData[K]) =>
+    setData(d => ({ ...d, [k]: v }));
+
+  const toggle = (key: "selfTaughtSkills" | "languages", val: string) => {
+    setData(d => {
+      const arr = d[key];
+      return { ...d, [key]: arr.includes(val) ? arr.filter(x => x !== val) : [...arr, val] };
+    });
+  };
+
+  const canNext =
+    (step === 1 && data.country && data.languagePref) ||
+    (step === 2 && data.education) ||
+    (step === 3) ||
+    (step === 4 && data.digitalLevel);
+
+  const next = () => step < 4 ? setStep(step + 1) : onSubmit(data);
+  const back = () => setStep(s => Math.max(1, s - 1));
+
+  return (
+    <div className="mx-auto w-full max-w-2xl">
+      {/* Progress */}
+      <div className="mb-8">
+        <div className="mb-2 flex justify-between text-xs text-muted-foreground">
+          <span>Step {step} of 4</span>
+          <span>{["Context","Education","Experience","Skills"][step-1]}</span>
+        </div>
+        <div className="grid grid-cols-4 gap-2">
+          {[1,2,3,4].map(i => (
+            <div key={i} className={`h-2 rounded-full transition-colors ${i <= step ? "bg-primary" : "bg-muted"}`} />
+          ))}
+        </div>
+      </div>
+
+      <Card className="p-6 sm:p-8">
+        {step === 1 && (
+          <div className="space-y-5">
+            <h2 className="text-xl font-semibold">Tell us about you</h2>
+            <div className="space-y-2">
+              <Label>Name (optional)</Label>
+              <Input value={data.name} onChange={e => update("name", e.target.value)} placeholder="Your first name" />
+            </div>
+            <div className="space-y-2">
+              <Label>Country</Label>
+              <Select value={data.country} onValueChange={v => update("country", v as CountryKey)}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>{COUNTRIES.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label>Language preference</Label>
+              <Select value={data.languagePref} onValueChange={v => update("languagePref", v)}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>{LANGUAGE_PREFS.map(l => <SelectItem key={l} value={l}>{l}</SelectItem>)}</SelectContent>
+              </Select>
+            </div>
+          </div>
+        )}
+
+        {step === 2 && (
+          <div className="space-y-5">
+            <h2 className="text-xl font-semibold">Your education</h2>
+            <div className="space-y-2">
+              <Label>Highest level completed</Label>
+              <Select value={data.education} onValueChange={v => update("education", v)}>
+                <SelectTrigger><SelectValue placeholder="Select…" /></SelectTrigger>
+                <SelectContent>{EDUCATION_LEVELS.map(l => <SelectItem key={l} value={l}>{l}</SelectItem>)}</SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label>Field of study (optional)</Label>
+              <Input value={data.fieldOfStudy} onChange={e => update("fieldOfStudy", e.target.value)} placeholder="e.g. business, engineering" />
+            </div>
+          </div>
+        )}
+
+        {step === 3 && (
+          <div className="space-y-5">
+            <h2 className="text-xl font-semibold">Your experience</h2>
+            <div className="space-y-2">
+              <Label>Describe your work in a few sentences</Label>
+              <Textarea
+                rows={4}
+                value={data.experience}
+                onChange={e => update("experience", e.target.value)}
+                placeholder="Paid work, business, family work — anything counts."
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>Self-taught skills (tap any that apply)</Label>
+              <div className="flex flex-wrap gap-2">
+                {SELF_TAUGHT_SKILLS.map(s => {
+                  const active = data.selfTaughtSkills.includes(s);
+                  return (
+                    <button
+                      type="button" key={s}
+                      onClick={() => toggle("selfTaughtSkills", s)}
+                      className={`rounded-full border px-3 py-1.5 text-sm transition-colors ${
+                        active ? "border-primary bg-primary text-primary-foreground" : "border-border bg-background hover:bg-muted"
+                      }`}
+                    >{s}</button>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {step === 4 && (
+          <div className="space-y-5">
+            <h2 className="text-xl font-semibold">Your skills</h2>
+            <div className="space-y-2">
+              <Label>Languages spoken</Label>
+              <div className="flex flex-wrap gap-2">
+                {LANGUAGES.map(l => {
+                  const active = data.languages.includes(l);
+                  return (
+                    <button
+                      type="button" key={l}
+                      onClick={() => toggle("languages", l)}
+                      className={`rounded-full border px-3 py-1.5 text-sm transition-colors ${
+                        active ? "border-primary bg-primary text-primary-foreground" : "border-border bg-background hover:bg-muted"
+                      }`}
+                    >{l}</button>
+                  );
+                })}
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label>Digital skill level</Label>
+              <Select value={data.digitalLevel} onValueChange={v => update("digitalLevel", v)}>
+                <SelectTrigger><SelectValue placeholder="Select…" /></SelectTrigger>
+                <SelectContent>{DIGITAL_LEVELS.map(l => <SelectItem key={l} value={l}>{l}</SelectItem>)}</SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label>Anything else? Community roles, caregiving, leadership</Label>
+              <Textarea rows={3} value={data.other} onChange={e => update("other", e.target.value)} />
+            </div>
+          </div>
+        )}
+
+        <div className="mt-8 flex items-center justify-between">
+          <Button variant="ghost" onClick={back} disabled={step === 1}>
+            <ArrowLeft className="mr-1 h-4 w-4" /> Back
+          </Button>
+          <Badge variant="secondary" className="hidden sm:inline-flex">{step}/4</Badge>
+          <Button onClick={next} disabled={!canNext}>
+            {step === 4 ? "Generate profile" : "Next"} <ArrowRight className="ml-1 h-4 w-4" />
+          </Button>
+        </div>
+      </Card>
+    </div>
+  );
+}
