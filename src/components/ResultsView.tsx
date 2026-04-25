@@ -145,7 +145,7 @@ export default function ResultsView({ intake, profile, isDemo, onRestart }: Prop
 
           {/* Opportunities */}
           <div className="space-y-3">
-            <h3 className="text-base font-semibold">Realistic opportunities</h3>
+            <h3 className="text-base font-semibold">Your career opportunities</h3>
             {youth.opportunities.map((o, i) => <OpportunityCard key={i} op={o} />)}
           </div>
 
