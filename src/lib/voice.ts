@@ -86,5 +86,36 @@ export function toSecondPerson(text: string, name?: string | null): string {
 
   out = fixAfterYou(out);
 
+  // 4c) Sentence-level pass: in any sentence whose subject is "you",
+  // conjugate verbs that follow a coordinator ("and", "but", "or", ",")
+  // since they share the "you" subject.
+  const irregularMap: Record<string, string> = {
+    has: "have", "hasn't": "haven't",
+    is: "are", "isn't": "aren't",
+    was: "were", "wasn't": "weren't",
+    does: "do", "doesn't": "don't",
+    goes: "go",
+  };
+  const conjugateVerb = (verb: string): string => {
+    const lower = verb.toLowerCase();
+    if (irregularMap[lower]) {
+      const repl = irregularMap[lower];
+      return verb[0] === verb[0].toUpperCase() ? repl[0].toUpperCase() + repl.slice(1) : repl;
+    }
+    if (/ies$/.test(verb)) return verb.slice(0, -3) + "y";
+    if (/(sh|ch|x|z|ss|o)es$/.test(verb)) return verb.slice(0, -2);
+    if (/[bcdfghjklmnpqrstvwxyz]es$/.test(verb)) return verb.slice(0, -1);
+    if (/s$/.test(verb) && !/ss$/.test(verb)) return verb.slice(0, -1);
+    return verb;
+  };
+
+  out = out.replace(/[^.!?]*[.!?]?/g, (sentence) => {
+    if (!/\b(You|you)\b/.test(sentence)) return sentence;
+    return sentence.replace(
+      /\b(and|but|or)\s+([A-Za-z']+)\b/g,
+      (_m, conj: string, verb: string) => `${conj} ${conjugateVerb(verb)}`,
+    );
+  });
+
   return out;
 }
