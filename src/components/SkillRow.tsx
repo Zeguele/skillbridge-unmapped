@@ -7,9 +7,9 @@ const DOT: Record<ProfileSkill["type"], string> = {
 };
 
 const TYPE_LABEL: Record<ProfileSkill["type"], string> = {
-  durable: "Durable",
-  developing: "Developing",
-  informal: "Informal",
+  durable: "Strong",
+  developing: "Growing",
+  informal: "Life skill",
 };
 
 function barColor(r: number) {
@@ -29,7 +29,7 @@ export default function SkillRow({ skill }: { skill: ProfileSkill }) {
       <p className="mb-2 pl-4 text-sm text-muted-foreground">{skill.description}</p>
       <div className="pl-4">
         <div className="mb-1 flex justify-between text-xs">
-          <span className="text-muted-foreground">Resilience to automation</span>
+          <span className="text-muted-foreground">How future-proof is this skill</span>
           <span className="tabular-nums">{skill.resilience}%</span>
         </div>
         <div className="h-1.5 overflow-hidden rounded-full bg-muted">
