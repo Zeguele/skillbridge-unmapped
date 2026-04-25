@@ -3,10 +3,11 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { COUNTRY_DATA } from "@/lib/countryData";
 import type { IntakeData, Profile } from "@/lib/types";
+import { toSecondPerson } from "@/lib/voice";
 import MetricsGrid from "./MetricsGrid";
 import OpportunityCard from "./OpportunityCard";
 import SkillRow from "./SkillRow";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { toast } from "sonner";
 import { Copy, RefreshCw, AlertTriangle } from "lucide-react";
 
@@ -51,6 +52,17 @@ function copyAsText(intake: IntakeData, profile: Profile) {
 export default function ResultsView({ intake, profile, isDemo, onRestart }: Props) {
   const [view, setView] = useState<"my" | "policy">("my");
   const stats = COUNTRY_DATA[intake.country];
+
+  // Defensive sanitization: ensure youth-facing text is always in second person.
+  const youth = useMemo(() => {
+    const name = intake.name;
+    return {
+      summary: toSecondPerson(profile.summary, name),
+      portabilityReason: toSecondPerson(profile.portabilityReason, name),
+      skills: profile.skills.map(s => ({ ...s, description: toSecondPerson(s.description, name) })),
+      opportunities: profile.opportunities.map(o => ({ ...o, description: toSecondPerson(o.description, name) })),
+    };
+  }, [profile, intake.name]);
 
   return (
     <div className="mx-auto w-full max-w-4xl space-y-6">
