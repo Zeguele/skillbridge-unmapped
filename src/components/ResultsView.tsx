@@ -7,6 +7,8 @@ import { toSecondPerson } from "@/lib/voice";
 import MetricsGrid from "./MetricsGrid";
 import OpportunityCard from "./OpportunityCard";
 import SkillRow from "./SkillRow";
+import JobsNearYou from "./JobsNearYou";
+import LaborDemandPanel from "./LaborDemandPanel";
 import { useState, useMemo } from "react";
 import { toast } from "sonner";
 import { Copy, RefreshCw, AlertTriangle } from "lucide-react";
@@ -146,6 +148,9 @@ export default function ResultsView({ intake, profile, isDemo, onRestart }: Prop
             <h3 className="text-base font-semibold">Realistic opportunities</h3>
             {youth.opportunities.map((o, i) => <OpportunityCard key={i} op={o} />)}
           </div>
+
+          {/* Real job openings from dataset */}
+          <JobsNearYou intake={intake} />
 
           <div className="flex flex-wrap justify-center gap-3 pt-2">
             <Button variant="outline" onClick={() => copyAsText(intake, profile)}>
