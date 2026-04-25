@@ -91,15 +91,36 @@ Deno.serve(async (req) => {
 Use plain, non-expert language. Be honest and grounded — opportunities must be realistic for the country, not aspirational.
 Map skills to ILO ISCO-08, ESCO, and O*NET. Provide concrete wage ranges in USD using local context.
 
-CRITICAL VOICE RULES:
-- For all youth-facing fields (summary, each skills[].description, each opportunities[].description, and portabilityReason), write in SECOND PERSON ("you", "your"). Be warm, direct, honest — like a mentor sitting across from the person. Never refer to them by name or as he/she/they in these fields. No technical jargon, no taxonomy codes, no data source citations in these fields.
-- Policymaker-only fields (signal1, signal2, wittgensteinSignal, policySkillsGap, policyInterventions, policyDataLimits) should stay in third-person analytical language with data citations.
-- Return opportunity matchScore as whole integers from 0 to 100 (e.g. 75, NOT 0.75).
-- Skill resilience must also be a whole integer from 0 to 100.
+CRITICAL VOICE RULES — ABSOLUTE, NO EXCEPTIONS:
+The following YOUTH-FACING fields MUST be written in SECOND PERSON addressed directly to the user as "you" / "your":
+  - summary
+  - every skills[].description
+  - every opportunities[].description
+  - portabilityReason
+
+In those fields you MUST NOT:
+  - use the person's name (it never appears in these strings)
+  - use he, she, they, him, her, them, his, hers, their, theirs
+  - refer to them as "the user", "this person", "the candidate", "the youth", or any third-person noun
+  - cite data sources, taxonomy codes, or use technical jargon
+
+Examples (follow exactly):
+  BAD: "Omar has a strong set of practical skills."
+  GOOD: "You have a strong set of practical skills."
+  BAD: "His experience in farming gives him an edge in agri-business roles."
+  GOOD: "Your experience in farming gives you an edge in agri-business roles."
+  BAD: "She could work as a tailor in a local workshop."
+  GOOD: "You could work as a tailor in a local workshop."
+
+Policymaker-only fields (signal1, signal2, wittgensteinSignal, policySkillsGap, policyInterventions, policyDataLimits) MUST stay in third-person analytical language with data citations. Do NOT use "you" in those fields.
+
+Numeric rules:
+  - Return opportunity matchScore as whole integers from 0 to 100 (e.g. 75, NOT 0.75).
+  - Skill resilience must also be a whole integer from 0 to 100.
 
 Return ONLY a tool call to build_profile. No markdown, no prose.`;
 
-    const user = `Person:
+    const user = `Person (the name below is INTERNAL CONTEXT ONLY — never write it in any youth-facing field):
 Name: ${intake.name || "(anonymous)"}
 Country: ${intake.country}
 Language preference: ${intake.languagePref}
@@ -117,7 +138,9 @@ Country labor market (use these exact figures in your reasoning):
 - Wage floor: $${countryStats.wageFloor}/hr
 - High-growth sectors: ${countryStats.sectors.join(", ")}
 
-Generate 3-4 realistic opportunities grounded in these sectors. For each skill assign a resilience score (0-100) reflecting automation/displacement resistance.`;
+Generate 3-4 realistic opportunities grounded in these sectors. For each skill assign a resilience score (0-100) reflecting automation/displacement resistance.
+
+Reminder: every youth-facing string ("summary", every "skills[].description", every "opportunities[].description", "portabilityReason") must address the reader as "you" — never use the name above, never use he/she/they.`;
 
     const resp = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
