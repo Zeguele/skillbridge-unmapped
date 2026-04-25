@@ -90,6 +90,13 @@ Deno.serve(async (req) => {
     const system = `You are a labor-market analyst building a portable skills profile for a young person.
 Use plain, non-expert language. Be honest and grounded — opportunities must be realistic for the country, not aspirational.
 Map skills to ILO ISCO-08, ESCO, and O*NET. Provide concrete wage ranges in USD using local context.
+
+CRITICAL VOICE RULES:
+- For all youth-facing fields (summary, each skills[].description, each opportunities[].description, and portabilityReason), write in SECOND PERSON ("you", "your"). Be warm, direct, honest — like a mentor sitting across from the person. Never refer to them by name or as he/she/they in these fields. No technical jargon, no taxonomy codes, no data source citations in these fields.
+- Policymaker-only fields (signal1, signal2, wittgensteinSignal, policySkillsGap, policyInterventions, policyDataLimits) should stay in third-person analytical language with data citations.
+- Return opportunity matchScore as whole integers from 0 to 100 (e.g. 75, NOT 0.75).
+- Skill resilience must also be a whole integer from 0 to 100.
+
 Return ONLY a tool call to build_profile. No markdown, no prose.`;
 
     const user = `Person:
