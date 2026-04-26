@@ -91,7 +91,7 @@ const PROFILE_TOOL = {
       required: [
         "summary","isco","esco","onet","skills","portability","portabilityReason",
         "marketContext","opportunities","signal1","signal2","wittgensteinSignal",
-        "policySkillsGap","policyInterventions","policyDataLimits","recommendedTraining",
+        "policySkillsGap","policySkillsGapSummary","policyInterventions","policyInterventionsSummary","policyDataLimits","policyDataLimitsSummary","recommendedTraining",
       ],
       additionalProperties: false,
     },
