@@ -22,7 +22,8 @@ export default function LaborDemandPanel({ country, sectorFilter }: Props) {
       <div>
         <h3 className="text-base font-semibold">Labor demand signals from job data</h3>
         <p className="text-xs text-muted-foreground">
-          Aggregated from a dataset of real roles in {scopeLabel} ({data.total} openings).
+          Aggregated from a dataset of real roles in {scopeLabel} ({data.total} openings
+          {sectorFilter && sectorFilter.length > 0 ? ` · filtered to ${sectorFilter.length} selected sector${sectorFilter.length === 1 ? "" : "s"}` : ""}).
         </p>
       </div>
 
