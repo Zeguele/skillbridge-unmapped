@@ -10,6 +10,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { COUNTRY_DATA } from "@/lib/countryData";
 import { DEMO_INTAKE } from "@/lib/demoData";
 import type { IntakeData, PolicyIntakeData, Profile } from "@/lib/types";
+import type { CountryKey } from "@/lib/countryData";
 import { toast } from "sonner";
 import { Compass, ArrowLeft, UserRound, BarChart3, ArrowRight, Globe } from "lucide-react";
 import { LANGUAGES, useLang, type LanguageCode } from "@/lib/i18n";
