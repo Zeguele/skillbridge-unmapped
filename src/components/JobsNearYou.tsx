@@ -81,14 +81,7 @@ export default function JobsNearYou({ intake }: Props) {
       </div>
 
       <div className="grid gap-3 md:grid-cols-2">
-        {shown.map(({ job, score }, i) => {
-          const fit = fitTag(score);
-          const fitClasses =
-            fit.tone === "good"
-              ? "bg-[hsl(var(--skill-durable))]/15 text-[hsl(var(--skill-durable))]"
-              : fit.tone === "ok"
-                ? "bg-[hsl(var(--info))]/15 text-[hsl(var(--info))]"
-                : "bg-[hsl(var(--warning))]/15 text-[hsl(var(--warning))]";
+        {shown.map(({ job }, i) => {
           const demandClasses =
             job.demandLevel === "High"
               ? "bg-[hsl(var(--skill-durable))]/15 text-[hsl(var(--skill-durable))]"
@@ -108,9 +101,6 @@ export default function JobsNearYou({ intake }: Props) {
                     <h4 className="text-sm font-semibold">{job.jobRole}</h4>
                   </div>
                 </div>
-                <span className={`flex-shrink-0 rounded-full px-2 py-0.5 text-[10px] font-medium ${fitClasses}`}>
-                  {fit.label}
-                </span>
               </div>
 
               <div className="flex items-baseline gap-2">
