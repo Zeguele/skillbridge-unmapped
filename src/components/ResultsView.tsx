@@ -289,9 +289,9 @@ function ExpandableAnalysisCard({ title, summary, full }: { title: string; summa
   const showToggle = hasSummary && fullTrimmed && fullTrimmed !== summaryTrimmed;
   const displaySummary = hasSummary ? summaryTrimmed : fullTrimmed;
   return (
-    <Card className="p-5">
-      <h4 className="mb-2 text-sm font-semibold">{title}</h4>
-      <p className="text-sm text-muted-foreground">{displaySummary}</p>
+    <Card className="px-5 py-4">
+      <h4 className="mb-2 text-sm font-medium">{title}</h4>
+      <p className="text-[13px] leading-[1.55] text-muted-foreground">{displaySummary}</p>
       <div
         className={`grid transition-all duration-300 ease-in-out ${
           open ? "mt-3 grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
@@ -299,7 +299,7 @@ function ExpandableAnalysisCard({ title, summary, full }: { title: string; summa
       >
         <div className="overflow-hidden">
           <div className="border-t border-border pt-3">
-            <p className="text-sm text-muted-foreground">{fullTrimmed}</p>
+            <p className="text-[13px] leading-[1.55] text-muted-foreground">{fullTrimmed}</p>
           </div>
         </div>
       </div>
@@ -324,9 +324,9 @@ function ExpandableSignalCard({ label, text }: { label: string; text: string }) 
   const rest = trimmed.slice(firstSentence.length).trim();
   const hasMore = rest.length > 0;
   return (
-    <Card className="p-5">
-      <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">{label}</div>
-      <p className="text-sm">{firstSentence}</p>
+    <Card className="border-0 bg-[hsl(var(--signal-bg))] px-5 py-4 shadow-none">
+      <div className="mb-2 text-[12px] font-semibold uppercase tracking-[0.04em] text-muted-foreground">{label}</div>
+      <p className="text-[13px] leading-[1.55] text-muted-foreground">{firstSentence}</p>
       <div
         className={`grid transition-all duration-300 ease-in-out ${
           open ? "mt-3 grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
@@ -334,7 +334,7 @@ function ExpandableSignalCard({ label, text }: { label: string; text: string }) 
       >
         <div className="overflow-hidden">
           <div className="border-t border-border pt-3">
-            <p className="text-sm">{rest}</p>
+            <p className="text-[13px] leading-[1.55] text-muted-foreground">{rest}</p>
           </div>
         </div>
       </div>
@@ -342,7 +342,7 @@ function ExpandableSignalCard({ label, text }: { label: string; text: string }) 
         <button
           type="button"
           onClick={() => setOpen(o => !o)}
-          className="mt-3 cursor-pointer text-xs font-medium text-primary hover:underline"
+          className="mt-3 cursor-pointer text-[13px] font-medium text-primary hover:underline"
         >
           {open ? "Show less ↑" : "Read more →"}
         </button>
