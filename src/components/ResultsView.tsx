@@ -281,20 +281,32 @@ export default function ResultsView({ intake, policyIntake, profile, isDemo, use
 function ExpandableAnalysisCard({ title, summary, full }: { title: string; summary?: string; full: string }) {
   const [open, setOpen] = useState(false);
   const hasSummary = !!(summary && summary.trim());
-  const showToggle = hasSummary && full && full.trim() !== summary?.trim();
+  const fullTrimmed = (full || "").trim();
+  const summaryTrimmed = (summary || "").trim();
+  const showToggle = hasSummary && fullTrimmed && fullTrimmed !== summaryTrimmed;
+  const displaySummary = hasSummary ? summaryTrimmed : fullTrimmed;
   return (
     <Card className="p-5">
       <h4 className="mb-2 text-sm font-semibold">{title}</h4>
-      <p className="text-sm text-muted-foreground">
-        {open || !hasSummary ? full : summary}
-      </p>
+      <p className="text-sm text-muted-foreground">{displaySummary}</p>
+      <div
+        className={`grid transition-all duration-300 ease-in-out ${
+          open ? "mt-3 grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
+        }`}
+      >
+        <div className="overflow-hidden">
+          <div className="border-t border-border pt-3">
+            <p className="text-sm text-muted-foreground">{fullTrimmed}</p>
+          </div>
+        </div>
+      </div>
       {showToggle && (
         <button
           type="button"
           onClick={() => setOpen(o => !o)}
-          className="mt-3 inline-flex items-center gap-1 text-xs font-medium text-primary hover:underline"
+          className="mt-3 cursor-pointer text-[13px] font-medium text-primary hover:underline"
         >
-          {open ? "Show less" : "Read full analysis →"}
+          {open ? "Show less ↑" : "Read full analysis →"}
         </button>
       )}
     </Card>
@@ -306,18 +318,30 @@ function ExpandableSignalCard({ label, text }: { label: string; text: string }) 
   const trimmed = (text || "").trim();
   const match = trimmed.match(/^[\s\S]*?[.!?](?:\s|$)/);
   const firstSentence = match ? match[0].trim() : trimmed;
-  const hasMore = firstSentence.length < trimmed.length;
+  const rest = trimmed.slice(firstSentence.length).trim();
+  const hasMore = rest.length > 0;
   return (
     <Card className="p-5">
       <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">{label}</div>
-      <p className="text-sm">{open || !hasMore ? trimmed : firstSentence}</p>
+      <p className="text-sm">{firstSentence}</p>
+      <div
+        className={`grid transition-all duration-300 ease-in-out ${
+          open ? "mt-3 grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
+        }`}
+      >
+        <div className="overflow-hidden">
+          <div className="border-t border-border pt-3">
+            <p className="text-sm">{rest}</p>
+          </div>
+        </div>
+      </div>
       {hasMore && (
         <button
           type="button"
           onClick={() => setOpen(o => !o)}
-          className="mt-3 inline-flex items-center gap-1 text-xs font-medium text-primary hover:underline"
+          className="mt-3 cursor-pointer text-xs font-medium text-primary hover:underline"
         >
-          {open ? "Show less" : "Read more →"}
+          {open ? "Show less ↑" : "Read more →"}
         </button>
       )}
     </Card>
