@@ -153,6 +153,7 @@ Country / region: ${country}
 Target population segments: ${segments.length ? segments.join("; ") : "(none specified — analyze general youth population)"}
 Sectors of interest: ${sectors.length ? sectors.join(", ") : "(all sectors)"}
 Primary objective: ${priority}
+Additional objectives or context from the policymaker: ${additionalObjective || "(none provided)"}
 Output language: ${targetLanguage}
 
 Country labor market (use these exact figures and cite them):
