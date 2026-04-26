@@ -5,6 +5,7 @@ import {
   ChevronRight,
   CheckCircle2,
   Compass,
+  Download,
   Layers,
   Link2,
   Network,
@@ -504,12 +505,16 @@ const Pitch = () => {
     return () => window.removeEventListener("keydown", onKey);
   }, [total]);
 
+  const handleDownloadPdf = () => {
+    window.print();
+  };
+
   return (
     <div
-      className="relative h-screen w-screen overflow-hidden font-sans text-white"
+      className="pitch-root relative h-screen w-screen overflow-hidden font-sans text-white"
       style={{ background: BG, fontFamily: "Inter, system-ui, sans-serif" }}
     >
-      {/* Inline keyframes */}
+      {/* Inline keyframes + print styles */}
       <style>{`
         @keyframes slideIn {
           from { opacity: 0; transform: translateY(24px); }
@@ -517,6 +522,35 @@ const Pitch = () => {
         }
         @keyframes drawBridge {
           to { stroke-dashoffset: 0; }
+        }
+        .pitch-print-tree { display: none; }
+        @media print {
+          @page { size: 13.333in 7.5in; margin: 0; }
+          html, body { background: ${BG} !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; margin: 0; padding: 0; }
+          body * { visibility: hidden; }
+          .pitch-print-tree, .pitch-print-tree * { visibility: visible; }
+          .pitch-print-tree {
+            display: block !important;
+            position: absolute; left: 0; top: 0; width: 100%;
+            background: ${BG};
+          }
+          .pitch-print-slide {
+            width: 13.333in;
+            height: 7.5in;
+            page-break-after: always;
+            break-after: page;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.6in 0.9in;
+            background: ${BG};
+            color: white;
+            box-sizing: border-box;
+            overflow: hidden;
+          }
+          .pitch-print-slide:last-child { page-break-after: auto; }
+          .pitch-print-slide > div { width: 100%; max-width: 11.5in; }
         }
       `}</style>
 
@@ -543,6 +577,17 @@ const Pitch = () => {
         <Compass className="h-4 w-4" style={{ color: ACCENT }} />
         Skill Bridge
       </div>
+
+      {/* Download PDF */}
+      <button
+        onClick={handleDownloadPdf}
+        className="absolute right-6 top-4 z-20 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-4 py-2 text-xs font-medium text-white backdrop-blur transition hover:bg-white/10"
+        aria-label="Download deck as PDF"
+        title="Opens print dialog — choose 'Save as PDF'"
+      >
+        <Download className="h-4 w-4" />
+        Download PDF
+      </button>
 
       {/* Slides */}
       <div className="relative h-full w-full">
@@ -588,6 +633,15 @@ const Pitch = () => {
         <div className="text-xs tracking-widest text-slate-400">
           {String(i + 1).padStart(2, "0")} / {String(total).padStart(2, "0")}
         </div>
+      </div>
+
+      {/* Print-only tree: every slide as its own page */}
+      <div className="pitch-print-tree" aria-hidden="true">
+        {SLIDES.map((S, idx) => (
+          <section key={`p-${idx}`} className="pitch-print-slide">
+            <S active={true} />
+          </section>
+        ))}
       </div>
     </div>
   );
