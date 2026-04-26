@@ -6,10 +6,11 @@ import { aggregateForCountry } from "@/lib/jobMatching";
 
 interface Props {
   country: CountryKey;
+  sectorFilter?: string[];
 }
 
-export default function LaborDemandPanel({ country }: Props) {
-  const data = useMemo(() => aggregateForCountry(country), [country]);
+export default function LaborDemandPanel({ country, sectorFilter }: Props) {
+  const data = useMemo(() => aggregateForCountry(country, sectorFilter), [country, sectorFilter]);
   const maxSector = data.bySector[0]?.count || 1;
 
   if (data.total === 0) return null;
