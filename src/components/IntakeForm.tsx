@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import {
   COUNTRIES, SELF_TAUGHT_SKILLS, LANGUAGES, EDUCATION_LEVELS,
-  DIGITAL_LEVELS, LANGUAGE_PREFS, type CountryKey,
+  DIGITAL_SKILLS, LANGUAGE_PREFS, type CountryKey,
 } from "@/lib/countryData";
 import type { IntakeData } from "@/lib/types";
 import { ArrowLeft, ArrowRight } from "lucide-react";
@@ -21,7 +21,9 @@ interface Props {
 const EMPTY: IntakeData = {
   name: "", country: "Ghana", languagePref: "English",
   education: "", fieldOfStudy: "", experience: "",
-  selfTaughtSkills: [], languages: [], digitalLevel: "", other: "",
+  selfTaughtSkills: [], languages: [], digitalLevel: "",
+  digitalSkills: [], hasCertifications: false, certificationsDescription: "",
+  other: "",
 };
 
 export default function IntakeForm({ initial, onSubmit }: Props) {
@@ -31,7 +33,7 @@ export default function IntakeForm({ initial, onSubmit }: Props) {
   const update = <K extends keyof IntakeData>(k: K, v: IntakeData[K]) =>
     setData(d => ({ ...d, [k]: v }));
 
-  const toggle = (key: "selfTaughtSkills" | "languages", val: string) => {
+  const toggle = (key: "selfTaughtSkills" | "languages" | "digitalSkills", val: string) => {
     setData(d => {
       const arr = d[key];
       return { ...d, [key]: arr.includes(val) ? arr.filter(x => x !== val) : [...arr, val] };
@@ -42,7 +44,7 @@ export default function IntakeForm({ initial, onSubmit }: Props) {
     (step === 1 && data.country && data.languagePref) ||
     (step === 2 && data.education) ||
     (step === 3) ||
-    (step === 4 && data.digitalLevel);
+    (step === 4);
 
   const next = () => step < 4 ? setStep(step + 1) : onSubmit(data);
   const back = () => setStep(s => Math.max(1, s - 1));
