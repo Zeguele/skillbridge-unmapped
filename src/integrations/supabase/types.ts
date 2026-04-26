@@ -14,7 +14,54 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      profiles: {
+        Row: {
+          country: string
+          created_at: string
+          digital_level: string | null
+          digital_skills: string[]
+          education_level: string | null
+          experience: string | null
+          field_of_study: string | null
+          has_certifications: boolean
+          id: string
+          languages: string[]
+          sectors_matched: string[]
+          self_taught: string[]
+          top_match_score: number | null
+        }
+        Insert: {
+          country: string
+          created_at?: string
+          digital_level?: string | null
+          digital_skills?: string[]
+          education_level?: string | null
+          experience?: string | null
+          field_of_study?: string | null
+          has_certifications?: boolean
+          id?: string
+          languages?: string[]
+          sectors_matched?: string[]
+          self_taught?: string[]
+          top_match_score?: number | null
+        }
+        Update: {
+          country?: string
+          created_at?: string
+          digital_level?: string | null
+          digital_skills?: string[]
+          education_level?: string | null
+          experience?: string | null
+          field_of_study?: string | null
+          has_certifications?: boolean
+          id?: string
+          languages?: string[]
+          sectors_matched?: string[]
+          self_taught?: string[]
+          top_match_score?: number | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

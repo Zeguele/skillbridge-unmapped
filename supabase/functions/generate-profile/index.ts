@@ -87,6 +87,28 @@ const PROFILE_TOOL = {
             additionalProperties: false,
           },
         },
+        // Policymaker-only enrichment fields. Optional so job-seeker mode is unaffected.
+        sectorGrowthData: {
+          type: "object",
+          description: "Map of sector name -> array of 10 numbers (annual employment growth % from 2016 to 2025).",
+          additionalProperties: { type: "array", items: { type: "number" } },
+        },
+        fastestGrowingSector: {
+          type: "object",
+          properties: { name: { type: "string" }, avg_growth: { type: "number" } },
+          required: ["name", "avg_growth"], additionalProperties: false,
+        },
+        largestEmployerSector: {
+          type: "object",
+          properties: { name: { type: "string" }, workforce_share: { type: "number" } },
+          required: ["name", "workforce_share"], additionalProperties: false,
+        },
+        highestInformalitySector: {
+          type: "object",
+          properties: { name: { type: "string" }, informality_rate: { type: "number" } },
+          required: ["name", "informality_rate"], additionalProperties: false,
+        },
+        mappingInsight: { type: "string", description: "3-4 sentence interpretation of aggregated youth profile data." },
       },
       required: [
         "summary","isco","esco","onet","skills","portability","portabilityReason",
@@ -148,16 +170,26 @@ CONTENT REQUIREMENTS:
 - policyDataLimitsSummary: Exactly 2 sentences condensing policyDataLimits. Be honest and specific.
 - recommendedTraining: 3-4 program-design recommendations (training pathways, partnerships, or pilot programs) the policymaker could fund or operate. Write in third-person analytical language ("This program would..."), NOT second person.
 
+DASHBOARD ENRICHMENT FIELDS (policy mode only — REQUIRED):
+- sectorGrowthData: For each sector listed in "Sectors to chart" below, generate realistic annual employment growth percentages for ${country} from 2016 to 2025 (an array of EXACTLY 10 numbers, one per year). Base these on real ILO ILOSTAT and World Bank WDI trends for this country. 2020 should show a COVID-related dip for most sectors. Growth rates should be between -3% and +10% and should reflect the actual economic structure of this country — for example, ICT sectors should trend upward faster than agriculture in most LMICs. The object keys MUST exactly match the sector names provided.
+- fastestGrowingSector: Object with "name" (one of the listed sectors) and "avg_growth" (number, e.g. 6.4). Base on real ILO and World Bank data for ${country}. Be specific.
+- largestEmployerSector: Object with "name" and "workforce_share" (number 0-100, e.g. 38 meaning 38%). Base on real labor data for ${country}.
+- highestInformalitySector: Object with "name" and "informality_rate" (number 0-100, e.g. 92). Base on real ILO informality data for ${country}.
+- mappingInsight: 3-4 sentences interpreting aggregated youth profile data for ${country} — where are the biggest supply-demand mismatches likely to be, what does the country's typical education distribution reveal, and what should program officers prioritize? Be specific and actionable.
+
 For schema fields that don't apply to policy mode (skills, opportunities), return short third-person placeholder content describing aggregate workforce characteristics rather than personal data. Do not invent an individual.
 
 Numeric rules: matchScore and resilience must be whole integers 0-100.
 
 Return ONLY a tool call to build_profile. No markdown, no prose.`;
 
+      const sectorsToChart = sectors.length ? sectors : countryStats.sectors;
+
       user = `Policy analysis request:
 Country / region: ${country}
 Target population segments: ${segments.length ? segments.join("; ") : "(none specified — analyze general youth population)"}
 Sectors of interest: ${sectors.length ? sectors.join(", ") : "(all sectors)"}
+Sectors to chart (use these EXACT names as keys in sectorGrowthData): ${sectorsToChart.join(", ")}
 Primary objective: ${priority}
 Additional objectives or context from the policymaker: ${additionalObjective || "(none provided)"}
 Output language: ${targetLanguage}
