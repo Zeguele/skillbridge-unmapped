@@ -2,7 +2,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { COUNTRY_DATA } from "@/lib/countryData";
-import type { IntakeData, Profile } from "@/lib/types";
+import type { IntakeData, PolicyIntakeData, Profile } from "@/lib/types";
 import { toSecondPerson } from "@/lib/voice";
 import MetricsGrid from "./MetricsGrid";
 import OpportunityCard from "./OpportunityCard";
@@ -16,6 +16,7 @@ import { Copy, RefreshCw, AlertTriangle } from "lucide-react";
 
 interface Props {
   intake: IntakeData;
+  policyIntake?: PolicyIntakeData;
   profile: Profile;
   isDemo?: boolean;
   userType?: "job_seeker" | "policy_officer";
