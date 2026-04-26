@@ -124,21 +124,14 @@ export default function MappedWorkforceIntelligence({ country, profile }: Props)
   const topSkills = useMemo(() => {
     const counts = new Map<string, number>();
     effectiveRows.forEach(r => (r.self_taught || []).forEach(s => counts.set(s, (counts.get(s) || 0) + 1)));
-    const sorted = [...counts.entries()].map(([name, count]) => ({ name, count })).sort((a, b) => b.count - a.count).slice(0, 12);
+    const sorted = [...counts.entries()].map(([name, count]) => ({ name, count })).sort((a, b) => b.count - a.count).slice(0, 5);
     const max = sorted[0]?.count || 1;
     const RANK_COLORS = [
       "#1D9E75", // 1 teal
       "#378ADD", // 2 blue
       "#7F77DD", // 3 purple
       "#EF9F27", // 4 amber
-      "#D85A30", // 5 coral
-      "#D4537E", // 6 pink
-      "#639922", // 7 green
-      "#185FA5", // 8 dark blue
-      "#BA7517", // 9 dark amber
-      "#993C1D", // 10 dark coral
-      "#534AB7", // 11 dark purple
-      "#085041", // 12 dark teal
+      "#639922", // 5 green
     ];
     return sorted.map((s, i) => ({ ...s, pct: (s.count / max) * 100, color: RANK_COLORS[i] }));
   }, [effectiveRows]);
