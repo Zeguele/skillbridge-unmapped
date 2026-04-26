@@ -229,33 +229,36 @@ export default function ResultsView({ intake, policyIntake, profile, isDemo, use
           </Card>
 
           <div className="grid gap-3 md:grid-cols-3">
-            <Card className="p-5">
-              <h4 className="mb-2 text-sm font-semibold">Skills gap diagnosis</h4>
-              <p className="text-sm text-muted-foreground">{profile.policySkillsGap}</p>
-            </Card>
-            <Card className="p-5">
-              <h4 className="mb-2 text-sm font-semibold">Recommended interventions</h4>
-              <p className="text-sm text-muted-foreground">{profile.policyInterventions}</p>
-            </Card>
-            <Card className="p-5">
-              <h4 className="mb-2 text-sm font-semibold">Data limitations</h4>
-              <p className="text-sm text-muted-foreground">{profile.policyDataLimits}</p>
-            </Card>
+            <ExpandableAnalysisCard
+              title="Skills gap diagnosis"
+              summary={profile.policySkillsGapSummary}
+              full={profile.policySkillsGap}
+            />
+            <ExpandableAnalysisCard
+              title="Recommended interventions"
+              summary={profile.policyInterventionsSummary}
+              full={profile.policyInterventions}
+            />
+            <ExpandableAnalysisCard
+              title="Data limitations"
+              summary={profile.policyDataLimitsSummary}
+              full={profile.policyDataLimits}
+            />
           </div>
 
           <div className="grid gap-3 md:grid-cols-3">
-            <Card className="p-5">
-              <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Signal 1 · ILO ILOSTAT</div>
-              <p className="text-sm">{profile.signal1}</p>
-            </Card>
-            <Card className="p-5">
-              <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Signal 2 · World Bank STEP / ILO</div>
-              <p className="text-sm">{profile.signal2}</p>
-            </Card>
-            <Card className="p-5">
-              <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Signal 3 · Wittgenstein Centre 2025–2035</div>
-              <p className="text-sm">{profile.wittgensteinSignal}</p>
-            </Card>
+            <ExpandableSignalCard
+              label="Signal 1 · ILO ILOSTAT"
+              text={profile.signal1}
+            />
+            <ExpandableSignalCard
+              label="Signal 2 · World Bank STEP / ILO"
+              text={profile.signal2}
+            />
+            <ExpandableSignalCard
+              label="Signal 3 · Wittgenstein Centre 2025–2035"
+              text={profile.wittgensteinSignal}
+            />
           </div>
 
           {/* Aggregate labor demand from dataset, filtered to selected sectors when present */}
