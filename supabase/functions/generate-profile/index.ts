@@ -99,16 +99,27 @@ Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const { intake, countryStats } = await req.json();
+    const { intake, countryStats, languagePromptName } = await req.json();
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY not configured");
+
+    // Resolve target language: explicit override from client > intake.languagePref > English.
+    const targetLanguage: string =
+      (typeof languagePromptName === "string" && languagePromptName.trim()) ||
+      (typeof intake?.languagePref === "string" && intake.languagePref.trim()) ||
+      "English";
 
     const system = `You are a labor-market analyst building a portable skills profile for a young person.
 Use plain, non-expert language. Be honest and grounded — opportunities must be realistic for the country, not aspirational.
 Map skills to ILO ISCO-08, ESCO, and O*NET. Provide concrete wage ranges in USD using local context.
 
+LANGUAGE — MANDATORY:
+Write ALL output text in ${targetLanguage}. Every human-readable string in the tool call (summary, every skills[].description, skills[].name, every opportunities[].description, opportunities[].title, portabilityReason, marketContext, signal1, signal2, wittgensteinSignal, policySkillsGap, policyInterventions, policyDataLimits, recommendedTraining[].title, recommendedTraining[].why, recommendedTraining[].duration, recommendedTraining[].format, recommendedTraining[].impact) MUST be written in ${targetLanguage}.
+Exception: taxonomy codes and titles (isco.code, isco.title, esco.label, onet.code, onet.title) MUST stay in English — they are international identifiers.
+If ${targetLanguage} is Arabic, write in Modern Standard Arabic. If Hindi, write in Devanagari script.
+
 CRITICAL VOICE RULES — ABSOLUTE, NO EXCEPTIONS:
-The following YOUTH-FACING fields MUST be written in SECOND PERSON addressed directly to the user as "you" / "your":
+The following YOUTH-FACING fields MUST be written in SECOND PERSON addressed directly to the user as "you" / "your" (translated naturally into ${targetLanguage}, e.g. "tu/vous" in French, "tú/usted" in Spanish, "você" in Portuguese, "أنت" in Arabic, "आप" in Hindi):
   - summary
   - every skills[].description
   - every opportunities[].description
@@ -116,24 +127,16 @@ The following YOUTH-FACING fields MUST be written in SECOND PERSON addressed dir
 
 In those fields you MUST NOT:
   - use the person's name (it never appears in these strings)
-  - use he, she, they, him, her, them, his, hers, their, theirs
+  - use third-person pronouns (he, she, they, etc., or their equivalents in ${targetLanguage})
   - refer to them as "the user", "this person", "the candidate", "the youth", or any third-person noun
   - cite data sources, taxonomy codes, or use technical jargon
 
-Examples (follow exactly):
-  BAD: "Omar has a strong set of practical skills."
-  GOOD: "You have a strong set of practical skills."
-  BAD: "His experience in farming gives him an edge in agri-business roles."
-  GOOD: "Your experience in farming gives you an edge in agri-business roles."
-  BAD: "She could work as a tailor in a local workshop."
-  GOOD: "You could work as a tailor in a local workshop."
-
 GRAMMAR — SUBJECT-VERB AGREEMENT (MANDATORY):
-All youth-facing text must use grammatically correct second person. The subject is always "you" — so the verb must always agree with "you". For example: "You have" (never "You has"), "You are" (never "You is"), "You possess" (never "You possesses"), "You do" (never "You does"), "Your skills suggest" (never "Your skills suggests"), "You also have informal experience" (never "You also has informal experience"). Double-check every sentence in summary, skills[].description, opportunities[].description, and portabilityReason for subject-verb agreement before returning. Never mix third-person verb forms with the subject "you".
+All youth-facing text must use grammatically correct second person in ${targetLanguage}. Verbs must agree with the second-person subject. Double-check every sentence in summary, skills[].description, opportunities[].description, and portabilityReason for subject-verb agreement before returning. Never mix third-person verb forms with the second-person subject.
 
-Policymaker-only fields (signal1, signal2, wittgensteinSignal, policySkillsGap, policyInterventions, policyDataLimits) MUST stay in third-person analytical language with data citations. Do NOT use "you" in those fields.
+Policymaker-only fields (signal1, signal2, wittgensteinSignal, policySkillsGap, policyInterventions, policyDataLimits) MUST stay in third-person analytical language with data citations. Do NOT use second person in those fields.
 
-For recommendedTraining, suggest 3-4 specific, realistic training opportunities that would build on what the user already knows. Do not suggest university degrees or long programs — focus on short, accessible training that exists in their country and context. Each recommendation should feel like a natural next step, not a stretch. Write all text in second person.
+For recommendedTraining, suggest 3-4 specific, realistic training opportunities that would build on what the user already knows. Do not suggest university degrees or long programs — focus on short, accessible training that exists in their country and context. Each recommendation should feel like a natural next step, not a stretch. Write all text in second person, in ${targetLanguage}.
 
 Numeric rules:
   - Return opportunity matchScore as whole integers from 0 to 100 (e.g. 75, NOT 0.75).
@@ -144,7 +147,7 @@ Return ONLY a tool call to build_profile. No markdown, no prose.`;
     const user = `Person (the name below is INTERNAL CONTEXT ONLY — never write it in any youth-facing field):
 Name: ${intake.name || "(anonymous)"}
 Country: ${intake.country}
-Language preference: ${intake.languagePref}
+Language preference: ${targetLanguage}
 Education: ${intake.education}${intake.fieldOfStudy ? ` (field: ${intake.fieldOfStudy})` : ""}
 Experience: ${intake.experience || "(none provided)"}
 Self-taught skills: ${intake.selfTaughtSkills.join(", ") || "(none)"}
