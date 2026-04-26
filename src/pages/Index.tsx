@@ -110,12 +110,14 @@ const Index = ({ autoDemo }: IndexProps = {}) => {
     }
   }
 
-  async function generatePolicy(data: PolicyIntakeData) {
+  async function generatePolicy(data: PolicyIntakeData, demo = false) {
     const enriched: PolicyIntakeData = { ...data, languagePref: option.promptName };
     const synthIntake = policyToIntake(enriched, option.promptName);
+    setUserType("policy_officer");
     setIntake(synthIntake);
     setPolicyIntake(enriched);
     setIsDemo(false);
+    setIsPolicyDemo(demo);
     setStage("loading");
     try {
       const { data: res, error } = await supabase.functions.invoke("generate-profile", {
