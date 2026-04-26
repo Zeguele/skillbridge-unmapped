@@ -12,7 +12,7 @@ import { toast } from "sonner";
 import { Compass, ArrowLeft, UserRound, BarChart3, ArrowRight } from "lucide-react";
 
 type Stage = "role" | "form" | "loading" | "results";
-export type UserType = "job_seeker" | "program_officer";
+export type UserType = "job_seeker" | "policy_officer";
 
 const Index = () => {
   const [stage, setStage] = useState<Stage>("role");
