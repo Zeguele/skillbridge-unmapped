@@ -43,7 +43,7 @@ function policyToIntake(p: PolicyIntakeData, languagePref: string): IntakeData {
   };
 }
 
-const Index = () => {
+const Index = ({ autoDemo }: IndexProps = {}) => {
   const { t, lang, setLang, option } = useLang();
   const [stage, setStage] = useState<Stage>("role");
   const [userType, setUserType] = useState<UserType>("job_seeker");
@@ -51,6 +51,7 @@ const Index = () => {
   const [policyIntake, setPolicyIntake] = useState<PolicyIntakeData | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [isDemo, setIsDemo] = useState(false);
+  const [isPolicyDemo, setIsPolicyDemo] = useState(false);
   const [prefill, setPrefill] = useState<IntakeData | undefined>(undefined);
   const [isReloadingPolicy, setIsReloadingPolicy] = useState(false);
 
