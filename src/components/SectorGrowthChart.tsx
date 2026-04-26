@@ -127,19 +127,19 @@ export default function SectorGrowthChart({ country, selectedSectors, profile }:
           label="Fastest growing"
           name={fastest?.name}
           value={fastest ? `${fastest.avg_growth.toFixed(1)}% avg/yr` : "—"}
-          color="#378ADD"
+          color="#042C53"
         />
         <InsightCard
           label="Largest employer"
           name={largest?.name}
           value={largest ? `${Math.round(largest.workforce_share)}% of workforce` : "—"}
-          color="#1D9E75"
+          color="#04342C"
         />
         <InsightCard
           label="Highest informality"
           name={informal?.name}
           value={informal ? `${Math.round(informal.informality_rate)}% informal` : "—"}
-          color="#D85A30"
+          color="#791F1F"
         />
       </div>
     </Card>
