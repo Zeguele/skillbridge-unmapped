@@ -64,7 +64,10 @@ export interface Profile {
   signal2: string;
   wittgensteinSignal: string;
   policySkillsGap: string;
+  policySkillsGapSummary?: string;
   policyInterventions: string;
+  policyInterventionsSummary?: string;
   policyDataLimits: string;
+  policyDataLimitsSummary?: string;
   recommendedTraining: TrainingRecommendation[];
 }

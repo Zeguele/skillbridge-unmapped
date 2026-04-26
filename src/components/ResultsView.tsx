@@ -10,7 +10,7 @@ import SkillRow from "./SkillRow";
 import JobsNearYou from "./JobsNearYou";
 import LaborDemandPanel from "./LaborDemandPanel";
 import RecommendedTraining from "./RecommendedTraining";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import { Copy, RefreshCw, AlertTriangle } from "lucide-react";
 
@@ -80,6 +80,16 @@ export default function ResultsView({ intake, policyIntake, profile, isDemo, use
 
       {view === "my" ? (
         <>
+          {/* Personal greeting */}
+          <div className="space-y-1">
+            <h1 className="text-2xl font-medium tracking-tight">
+              Hi {intake.name?.trim() ? intake.name.trim().split(/\s+/)[0] : "there"}
+            </h1>
+            <p className="text-sm text-muted-foreground">
+              Here's what your skills say about you — and what's out there for you.
+            </p>
+          </div>
+
           {/* Profile card */}
           <Card className="p-5 sm:p-6">
             <div className="flex items-start gap-4">
@@ -219,33 +229,36 @@ export default function ResultsView({ intake, policyIntake, profile, isDemo, use
           </Card>
 
           <div className="grid gap-3 md:grid-cols-3">
-            <Card className="p-5">
-              <h4 className="mb-2 text-sm font-semibold">Skills gap diagnosis</h4>
-              <p className="text-sm text-muted-foreground">{profile.policySkillsGap}</p>
-            </Card>
-            <Card className="p-5">
-              <h4 className="mb-2 text-sm font-semibold">Recommended interventions</h4>
-              <p className="text-sm text-muted-foreground">{profile.policyInterventions}</p>
-            </Card>
-            <Card className="p-5">
-              <h4 className="mb-2 text-sm font-semibold">Data limitations</h4>
-              <p className="text-sm text-muted-foreground">{profile.policyDataLimits}</p>
-            </Card>
+            <ExpandableAnalysisCard
+              title="Skills gap diagnosis"
+              summary={profile.policySkillsGapSummary}
+              full={profile.policySkillsGap}
+            />
+            <ExpandableAnalysisCard
+              title="Recommended interventions"
+              summary={profile.policyInterventionsSummary}
+              full={profile.policyInterventions}
+            />
+            <ExpandableAnalysisCard
+              title="Data limitations"
+              summary={profile.policyDataLimitsSummary}
+              full={profile.policyDataLimits}
+            />
           </div>
 
           <div className="grid gap-3 md:grid-cols-3">
-            <Card className="p-5">
-              <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Signal 1 · ILO ILOSTAT</div>
-              <p className="text-sm">{profile.signal1}</p>
-            </Card>
-            <Card className="p-5">
-              <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Signal 2 · World Bank STEP / ILO</div>
-              <p className="text-sm">{profile.signal2}</p>
-            </Card>
-            <Card className="p-5">
-              <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Signal 3 · Wittgenstein Centre 2025–2035</div>
-              <p className="text-sm">{profile.wittgensteinSignal}</p>
-            </Card>
+            <ExpandableSignalCard
+              label="Signal 1 · ILO ILOSTAT"
+              text={profile.signal1}
+            />
+            <ExpandableSignalCard
+              label="Signal 2 · World Bank STEP / ILO"
+              text={profile.signal2}
+            />
+            <ExpandableSignalCard
+              label="Signal 3 · Wittgenstein Centre 2025–2035"
+              text={profile.wittgensteinSignal}
+            />
           </div>
 
           {/* Aggregate labor demand from dataset, filtered to selected sectors when present */}
@@ -264,3 +277,50 @@ export default function ResultsView({ intake, policyIntake, profile, isDemo, use
     </div>
   );
 }
+
+function ExpandableAnalysisCard({ title, summary, full }: { title: string; summary?: string; full: string }) {
+  const [open, setOpen] = useState(false);
+  const hasSummary = !!(summary && summary.trim());
+  const showToggle = hasSummary && full && full.trim() !== summary?.trim();
+  return (
+    <Card className="p-5">
+      <h4 className="mb-2 text-sm font-semibold">{title}</h4>
+      <p className="text-sm text-muted-foreground">
+        {open || !hasSummary ? full : summary}
+      </p>
+      {showToggle && (
+        <button
+          type="button"
+          onClick={() => setOpen(o => !o)}
+          className="mt-3 inline-flex items-center gap-1 text-xs font-medium text-primary hover:underline"
+        >
+          {open ? "Show less" : "Read full analysis →"}
+        </button>
+      )}
+    </Card>
+  );
+}
+
+function ExpandableSignalCard({ label, text }: { label: string; text: string }) {
+  const [open, setOpen] = useState(false);
+  const trimmed = (text || "").trim();
+  const match = trimmed.match(/^[\s\S]*?[.!?](?:\s|$)/);
+  const firstSentence = match ? match[0].trim() : trimmed;
+  const hasMore = firstSentence.length < trimmed.length;
+  return (
+    <Card className="p-5">
+      <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">{label}</div>
+      <p className="text-sm">{open || !hasMore ? trimmed : firstSentence}</p>
+      {hasMore && (
+        <button
+          type="button"
+          onClick={() => setOpen(o => !o)}
+          className="mt-3 inline-flex items-center gap-1 text-xs font-medium text-primary hover:underline"
+        >
+          {open ? "Show less" : "Read more →"}
+        </button>
+      )}
+    </Card>
+  );
+}
+
