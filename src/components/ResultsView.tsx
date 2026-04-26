@@ -246,19 +246,22 @@ export default function ResultsView({ intake, policyIntake, profile, isDemo, use
             />
           </div>
 
-          <div className="grid gap-3 md:grid-cols-3">
-            <ExpandableSignalCard
-              label="Signal 1 · ILO ILOSTAT"
-              text={profile.signal1}
-            />
-            <ExpandableSignalCard
-              label="Signal 2 · World Bank STEP / ILO"
-              text={profile.signal2}
-            />
-            <ExpandableSignalCard
-              label="Signal 3 · Wittgenstein Centre 2025–2035"
-              text={profile.wittgensteinSignal}
-            />
+          <div className="pt-3">
+            <h3 className="mb-4 text-sm font-medium">Econometric signals</h3>
+            <div className="grid gap-3 md:grid-cols-3">
+              <ExpandableSignalCard
+                label="Signal 1 · ILO ILOSTAT"
+                text={profile.signal1}
+              />
+              <ExpandableSignalCard
+                label="Signal 2 · World Bank STEP / ILO"
+                text={profile.signal2}
+              />
+              <ExpandableSignalCard
+                label="Signal 3 · Wittgenstein Centre 2025–2035"
+                text={profile.wittgensteinSignal}
+              />
+            </div>
           </div>
 
           {/* Aggregate labor demand from dataset, filtered to selected sectors when present */}
