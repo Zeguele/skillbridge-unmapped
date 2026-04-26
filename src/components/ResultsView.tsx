@@ -12,7 +12,7 @@ import LaborDemandPanel from "./LaborDemandPanel";
 import RecommendedTraining from "./RecommendedTraining";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
-import { Copy, RefreshCw, AlertTriangle, ChevronDown } from "lucide-react";
+import { Copy, RefreshCw, AlertTriangle } from "lucide-react";
 
 interface Props {
   intake: IntakeData;
