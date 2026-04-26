@@ -1,5 +1,13 @@
 import type { CountryKey } from "./countryData";
 
+export interface PolicyIntakeData {
+  country: CountryKey;
+  segments: string[];
+  sectors: string[];
+  priority: string;
+  languagePref: string;
+}
+
 export interface IntakeData {
   name: string;
   country: CountryKey;
