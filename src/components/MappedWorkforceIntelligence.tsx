@@ -258,7 +258,7 @@ export default function MappedWorkforceIntelligence({ country, profile }: Props)
             <div className="space-y-2">
               {topSkills.map(s => (
                 <div key={s.name} className="flex items-center gap-3 text-[12px]">
-                  <div className="w-[110px] shrink-0 truncate text-muted-foreground" title={s.name}>{s.name}</div>
+                  <div className="w-[140px] shrink-0 text-muted-foreground" title={s.name}>{s.name}</div>
                   <div className="relative h-3 flex-1 overflow-hidden rounded-sm bg-muted">
                     <div className="h-full rounded-sm" style={{ width: `${s.pct}%`, backgroundColor: s.color }} />
                   </div>
