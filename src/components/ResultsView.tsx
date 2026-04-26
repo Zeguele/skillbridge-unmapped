@@ -165,7 +165,7 @@ export default function ResultsView({ intake, profile, isDemo, userType = "job_s
               Portability: {profile.portability} — {profile.portabilityReason}
             </p>
             <p className="mt-3 border-t border-border pt-3 text-xs text-muted-foreground">
-              You are viewing aggregate signals for this profile type. To see the youth-facing version, start over and select Job Seeker.
+              You are viewing aggregate signals for this profile type. To see the youth-facing version, start over and select Job Seeker on the home page.
             </p>
           </Card>
 
