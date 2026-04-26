@@ -17,7 +17,7 @@ interface Props {
   intake: IntakeData;
   profile: Profile;
   isDemo?: boolean;
-  userType?: "job_seeker" | "program_officer";
+  userType?: "job_seeker" | "policy_officer";
   onRestart: () => void;
 }
 
@@ -53,7 +53,7 @@ function copyAsText(intake: IntakeData, profile: Profile) {
 }
 
 export default function ResultsView({ intake, profile, isDemo, userType = "job_seeker", onRestart }: Props) {
-  const view: "my" | "policy" = userType === "program_officer" ? "policy" : "my";
+  const view: "my" | "policy" = userType === "policy_officer" ? "policy" : "my";
   const stats = COUNTRY_DATA[intake.country];
 
   // Defensive sanitization: ensure youth-facing text is always in second person.
@@ -165,7 +165,7 @@ export default function ResultsView({ intake, profile, isDemo, userType = "job_s
               Portability: {profile.portability} — {profile.portabilityReason}
             </p>
             <p className="mt-3 border-t border-border pt-3 text-xs text-muted-foreground">
-              You are viewing aggregate signals for this profile type. To see the youth-facing version, start over and select Job Seeker.
+              You are viewing aggregate signals for this profile type. To see the youth-facing version, start over and select Job Seeker on the home page.
             </p>
           </Card>
 
