@@ -84,6 +84,13 @@ export default function ResultsView({ intake, policyIntake, profile, isDemo, isP
         </div>
       )}
 
+      {isPolicyDemo && (
+        <div className="flex items-start gap-2 rounded-lg border border-[hsl(var(--warning))]/40 bg-[hsl(var(--warning))]/10 p-3 text-sm">
+          <AlertTriangle className="mt-0.5 h-4 w-4 flex-shrink-0 text-[hsl(var(--warning))]" />
+          <span>This is a demo — exploring workforce data and policy signals for {intake.country}.</span>
+        </div>
+      )}
+
       {view === "my" ? (
         <>
           {/* Personal greeting */}
