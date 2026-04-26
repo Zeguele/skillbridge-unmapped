@@ -17,7 +17,7 @@ interface Props {
   intake: IntakeData;
   profile: Profile;
   isDemo?: boolean;
-  userType?: "job_seeker" | "program_officer";
+  userType?: "job_seeker" | "policy_officer";
   onRestart: () => void;
 }
 
