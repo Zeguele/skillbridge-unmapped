@@ -297,7 +297,7 @@ export default function ResultsView({ intake, policyIntake, profile, isDemo, use
             sectorFilter={policyIntake?.sectors}
           />
 
-          <div className="flex justify-center pt-2">
+          <div className="no-print flex justify-center pt-2">
             <Button variant="ghost" onClick={onRestart}>
               <RefreshCw className="mr-2 h-4 w-4" /> Start over
             </Button>
