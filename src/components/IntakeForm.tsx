@@ -8,10 +8,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import {
   COUNTRIES, SELF_TAUGHT_SKILLS, LANGUAGES, EDUCATION_LEVELS,
-  DIGITAL_SKILLS, LANGUAGE_PREFS, type CountryKey,
+  DIGITAL_SKILLS, type CountryKey,
 } from "@/lib/countryData";
 import type { IntakeData } from "@/lib/types";
 import { ArrowLeft, ArrowRight } from "lucide-react";
+import { useLang } from "@/lib/i18n";
 
 interface Props {
   initial?: IntakeData;
@@ -27,6 +28,7 @@ const EMPTY: IntakeData = {
 };
 
 export default function IntakeForm({ initial, onSubmit }: Props) {
+  const { t } = useLang();
   const [step, setStep] = useState(1);
   const [data, setData] = useState<IntakeData>(initial ?? EMPTY);
 
@@ -41,7 +43,7 @@ export default function IntakeForm({ initial, onSubmit }: Props) {
   };
 
   const canNext =
-    (step === 1 && data.country && data.languagePref) ||
+    (step === 1 && data.country) ||
     (step === 2 && data.education) ||
     (step === 3) ||
     (step === 4);
@@ -54,8 +56,8 @@ export default function IntakeForm({ initial, onSubmit }: Props) {
       {/* Progress */}
       <div className="mb-8">
         <div className="mb-2 flex justify-between text-xs text-muted-foreground">
-          <span>Step {step} of 4</span>
-          <span>{["Context","Education","Experience","Skills"][step-1]}</span>
+          <span>{t("form.step")} {step} {t("form.of")} 4</span>
+          <span>{[t("form.context"), t("form.education"), t("form.experience"), t("form.skills")][step-1]}</span>
         </div>
         <div className="grid grid-cols-4 gap-2">
           {[1,2,3,4].map(i => (
@@ -67,23 +69,16 @@ export default function IntakeForm({ initial, onSubmit }: Props) {
       <Card className="p-6 sm:p-8">
         {step === 1 && (
           <div className="space-y-5">
-            <h2 className="text-xl font-semibold">Tell us about you</h2>
+            <h2 className="text-xl font-semibold">{t("form.tellUs")}</h2>
             <div className="space-y-2">
-              <Label>Name (optional)</Label>
-              <Input value={data.name} onChange={e => update("name", e.target.value)} placeholder="Your first name" />
+              <Label>{t("form.name")}</Label>
+              <Input value={data.name} onChange={e => update("name", e.target.value)} placeholder={t("form.namePlaceholder")} />
             </div>
             <div className="space-y-2">
-              <Label>Country</Label>
+              <Label>{t("form.country")}</Label>
               <Select value={data.country} onValueChange={v => update("country", v as CountryKey)}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>{COUNTRIES.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-2">
-              <Label>Language preference</Label>
-              <Select value={data.languagePref} onValueChange={v => update("languagePref", v)}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>{LANGUAGE_PREFS.map(l => <SelectItem key={l} value={l}>{l}</SelectItem>)}</SelectContent>
               </Select>
             </div>
           </div>
@@ -221,11 +216,11 @@ export default function IntakeForm({ initial, onSubmit }: Props) {
 
         <div className="mt-8 flex items-center justify-between">
           <Button variant="ghost" onClick={back} disabled={step === 1}>
-            <ArrowLeft className="mr-1 h-4 w-4" /> Back
+            <ArrowLeft className="me-1 h-4 w-4" /> {t("form.back")}
           </Button>
           <Badge variant="secondary" className="hidden sm:inline-flex">{step}/4</Badge>
           <Button onClick={next} disabled={!canNext}>
-            {step === 4 ? "Generate profile" : "Next"} <ArrowRight className="ml-1 h-4 w-4" />
+            {step === 4 ? t("form.generate") : t("form.next")} <ArrowRight className="ms-1 h-4 w-4" />
           </Button>
         </div>
       </Card>

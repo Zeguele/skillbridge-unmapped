@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import IntakeForm from "@/components/IntakeForm";
 import LoadingScreen from "@/components/LoadingScreen";
 import ResultsView from "@/components/ResultsView";
@@ -9,12 +10,14 @@ import { COUNTRY_DATA } from "@/lib/countryData";
 import { DEMO_INTAKE } from "@/lib/demoData";
 import type { IntakeData, Profile } from "@/lib/types";
 import { toast } from "sonner";
-import { Compass, ArrowLeft, UserRound, BarChart3, ArrowRight } from "lucide-react";
+import { Compass, ArrowLeft, UserRound, BarChart3, ArrowRight, Globe } from "lucide-react";
+import { LANGUAGES, useLang, getLanguage, type LanguageCode } from "@/lib/i18n";
 
 type Stage = "role" | "form" | "loading" | "results";
 export type UserType = "job_seeker" | "policy_officer";
 
 const Index = () => {
+  const { t, lang, setLang, option } = useLang();
   const [stage, setStage] = useState<Stage>("role");
   const [userType, setUserType] = useState<UserType>("job_seeker");
   const [intake, setIntake] = useState<IntakeData | null>(null);
@@ -23,12 +26,18 @@ const Index = () => {
   const [prefill, setPrefill] = useState<IntakeData | undefined>(undefined);
 
   async function generate(data: IntakeData, demo: boolean) {
-    setIntake(data);
+    const enriched: IntakeData = { ...data, languagePref: option.promptName };
+    setIntake(enriched);
     setIsDemo(demo);
     setStage("loading");
     try {
       const { data: res, error } = await supabase.functions.invoke("generate-profile", {
-        body: { intake: data, countryStats: COUNTRY_DATA[data.country] },
+        body: {
+          intake: enriched,
+          countryStats: COUNTRY_DATA[enriched.country],
+          languagePromptName: option.promptName,
+          languageCode: lang,
+        },
       });
       if (error) throw error;
       if (res?.error) throw new Error(res.error);
@@ -75,13 +84,33 @@ const Index = () => {
             {stage === "results" && (
               <button
                 onClick={restart}
-                className="ml-2 inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
+                className="ms-2 inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
               >
-                <ArrowLeft className="h-3 w-3" /> Change role
+                <ArrowLeft className="h-3 w-3" /> {t("nav.changeRole")}
               </button>
             )}
           </div>
-          <span className="hidden text-xs text-muted-foreground sm:inline">World Bank hackathon</span>
+          <div className="flex items-center gap-3">
+            {/* Language indicator + switcher (compact) */}
+            <Select value={lang} onValueChange={(v) => setLang(v as LanguageCode)}>
+              <SelectTrigger
+                className="h-8 w-auto gap-1.5 rounded-full border-border bg-background px-3 text-xs font-medium"
+                aria-label="Language"
+              >
+                <Globe className="h-3.5 w-3.5 text-muted-foreground" />
+                <span className="font-semibold tracking-wide">{option.short}</span>
+              </SelectTrigger>
+              <SelectContent align="end">
+                {LANGUAGES.map((l) => (
+                  <SelectItem key={l.code} value={l.code}>
+                    <span className="font-mono text-xs text-muted-foreground me-2">{l.short}</span>
+                    {l.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <span className="hidden text-xs text-muted-foreground sm:inline">{t("nav.hackathon")}</span>
+          </div>
         </div>
       </header>
 
@@ -94,10 +123,32 @@ const Index = () => {
               </div>
               <div className="text-lg font-semibold tracking-tight">SKILL BRIDGE</div>
               <h1 className="mt-6 text-balance text-3xl font-semibold tracking-tight sm:text-4xl">
-                Who are you?
+                {t("landing.who")}
               </h1>
               <p className="mx-auto mt-3 max-w-xl text-pretty text-muted-foreground">
-                Skill Bridge works differently depending on who you are. Pick the option that fits you best.
+                {t("landing.subtitle")}
+              </p>
+            </div>
+
+            {/* Language selector for the whole experience */}
+            <div className="mx-auto mb-6 max-w-sm rounded-lg border border-border bg-muted/40 p-3">
+              <label className="mb-1.5 flex items-center justify-center gap-1.5 text-xs font-medium text-muted-foreground">
+                <Globe className="h-3.5 w-3.5" />
+                {t("landing.languageLabel")}
+              </label>
+              <Select value={lang} onValueChange={(v) => setLang(v as LanguageCode)}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {LANGUAGES.map((l) => (
+                    <SelectItem key={l.code} value={l.code}>
+                      <span className="font-mono text-xs text-muted-foreground me-2">{l.short}</span>
+                      {l.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <p className="mt-2 text-center text-[11px] leading-snug text-muted-foreground">
+                {t("landing.languageHint")}
               </p>
             </div>
 
@@ -109,14 +160,13 @@ const Index = () => {
                 <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-lg bg-primary/10 text-primary">
                   <UserRound className="h-5 w-5" />
                 </div>
-                <h2 className="text-lg font-semibold">Job Seeker</h2>
+                <h2 className="text-lg font-semibold">{t("landing.jobSeeker")}</h2>
                 <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                  I'm looking for work. Find out what your skills are worth, discover career paths that match
-                  your experience, and see real job openings near you.
+                  {t("landing.jobSeekerDesc")}
                 </p>
                 <div className="mt-6">
                   <Button className="w-full" onClick={(e) => { e.stopPropagation(); pickRole("job_seeker"); }}>
-                    Get started <ArrowRight className="ml-1 h-4 w-4" />
+                    {t("landing.getStarted")} <ArrowRight className="ms-1 h-4 w-4" />
                   </Button>
                 </div>
               </Card>
@@ -128,10 +178,9 @@ const Index = () => {
                 <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-lg bg-accent text-accent-foreground">
                   <BarChart3 className="h-5 w-5" />
                 </div>
-                <h2 className="text-lg font-semibold">Program Officer / Policymaker</h2>
+                <h2 className="text-lg font-semibold">{t("landing.policymaker")}</h2>
                 <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                  Analyze labor market signals, assess skills gaps, evaluate intervention strategies, and explore
-                  workforce data across regions to inform policy decisions and program design.
+                  {t("landing.policymakerDesc")}
                 </p>
                 <div className="mt-6">
                   <Button
@@ -139,24 +188,24 @@ const Index = () => {
                     className="w-full"
                     onClick={(e) => { e.stopPropagation(); pickRole("policy_officer"); }}
                   >
-                    Explore data <ArrowRight className="ml-1 h-4 w-4" />
+                    {t("landing.exploreData")} <ArrowRight className="ms-1 h-4 w-4" />
                   </Button>
                 </div>
               </Card>
             </div>
 
             <p className="mt-6 text-center text-xs text-muted-foreground">
-              Not sure? Most people choose Job Seeker.
+              {t("landing.notSure")}
             </p>
 
             <div className="mt-8 text-center">
               <Button variant="ghost" size="sm" onClick={startDemo}>
-                Or see a demo — meet Amara
+                {t("landing.demo")}
               </Button>
             </div>
 
             <p className="mt-8 text-center text-xs text-muted-foreground">
-              Data sources: ILO ILOSTAT · World Bank WDI / STEP · ESCO · O*NET · Wittgenstein Centre
+              {t("landing.dataSources")}
             </p>
           </div>
         )}
@@ -180,7 +229,7 @@ const Index = () => {
 
       <footer className="border-t border-border">
         <div className="mx-auto max-w-5xl px-4 py-4 text-center text-xs text-muted-foreground">
-          Skill Bridge · designed for low-bandwidth contexts · honest, grounded, plain language
+          {t("footer.tagline")}
         </div>
       </footer>
     </div>

@@ -64,4 +64,6 @@ export const DIGITAL_SKILLS = [
   "AI tools (ChatGPT, translation apps, etc.)",
 ];
 
-export const LANGUAGE_PREFS = ["English", "Français", "Kiswahili", "Arabic"] as const;
+// Note: language preference is now driven by the global LanguageProvider (src/lib/i18n.tsx).
+// Kept here as a deprecated alias for any legacy import.
+export const LANGUAGE_PREFS = ["English", "Français", "العربية", "Español", "Português", "हिन्दी"] as const;
