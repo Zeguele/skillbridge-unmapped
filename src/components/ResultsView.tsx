@@ -171,12 +171,24 @@ export default function ResultsView({ intake, policyIntake, profile, isDemo, use
         <>
           {/* Policy analysis summary */}
           <Card className="p-5 sm:p-6">
-            <h2 className="text-xl font-semibold">
-              Policy analysis — {intake.country}
-            </h2>
-            <p className="mt-1 text-xs text-muted-foreground">
-              {new Date().toLocaleDateString()} · aggregate signals for program officers and policymakers
-            </p>
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0">
+                <h2 className="text-xl font-semibold">
+                  Policy analysis — {intake.country}
+                </h2>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  {new Date().toLocaleDateString()} · aggregate signals for program officers and policymakers
+                </p>
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => window.print()}
+                className="no-print flex-shrink-0"
+              >
+                <Printer className="mr-2 h-4 w-4" /> Print report
+              </Button>
+            </div>
 
             {policyIntake && (
               <div className="mt-4 space-y-3">
