@@ -103,6 +103,40 @@ export default function IntakeForm({ initial, onSubmit }: Props) {
               <Label>Field of study (optional)</Label>
               <Input value={data.fieldOfStudy} onChange={e => update("fieldOfStudy", e.target.value)} placeholder="e.g. business, engineering" />
             </div>
+            <div className="space-y-2">
+              <Label>Do you have any formal certifications, licenses, or training courses?</Label>
+              <p className="text-xs text-muted-foreground">
+                This includes vocational certificates, online course completions, trade licenses, driving permits, first aid training, or anything with a certificate — even if it's not from a school.
+              </p>
+              <div className="flex flex-wrap gap-2 pt-1">
+                {[
+                  { label: "Yes", val: true },
+                  { label: "No", val: false },
+                ].map(opt => {
+                  const active = data.hasCertifications === opt.val;
+                  return (
+                    <button
+                      type="button" key={opt.label}
+                      onClick={() => update("hasCertifications", opt.val)}
+                      className={`rounded-full border px-4 py-1.5 text-sm transition-colors ${
+                        active ? "border-primary bg-primary text-primary-foreground" : "border-border bg-background hover:bg-muted"
+                      }`}
+                    >{opt.label}</button>
+                  );
+                })}
+              </div>
+            </div>
+            {data.hasCertifications && (
+              <div className="space-y-2">
+                <Label>Describe your certifications or training</Label>
+                <Textarea
+                  rows={3}
+                  value={data.certificationsDescription}
+                  onChange={e => update("certificationsDescription", e.target.value)}
+                  placeholder="e.g. I completed a 3-month mobile phone repair course at a local training centre. I also have a motorcycle driving permit."
+                />
+              </div>
+            )}
           </div>
         )}
 
