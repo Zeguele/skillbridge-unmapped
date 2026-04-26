@@ -155,9 +155,12 @@ export default function ResultsView({ intake, policyIntake, profile, isDemo, use
           {/* Recommended training */}
           <RecommendedTraining items={profile.recommendedTraining ?? []} />
 
-          <div className="flex flex-wrap justify-center gap-3 pt-2">
+          <div className="no-print flex flex-wrap justify-center gap-3 pt-2">
             <Button variant="outline" onClick={() => copyAsText(intake, profile)}>
               <Copy className="mr-2 h-4 w-4" /> Copy profile as plain text
+            </Button>
+            <Button variant="outline" onClick={() => window.print()}>
+              <Printer className="mr-2 h-4 w-4" /> Print report
             </Button>
             <Button variant="ghost" onClick={onRestart}>
               <RefreshCw className="mr-2 h-4 w-4" /> Start over
