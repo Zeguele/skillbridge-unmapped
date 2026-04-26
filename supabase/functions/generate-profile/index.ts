@@ -141,8 +141,11 @@ CONTENT REQUIREMENTS:
 - signal2: Returns to education and skills (World Bank STEP / ILO task indices) for the selected segments.
 - wittgensteinSignal: Wittgenstein Centre 2025–2035 education projection insight relevant to ${country} and the segments.
 - policySkillsGap: Specific skills-gap diagnosis for the selected segments in the selected sectors.
+- policySkillsGapSummary: Exactly 2 sentences condensing policySkillsGap. Be specific and data-grounded.
 - policyInterventions: 2-3 concrete intervention strategies tied to the primary objective (${priority}). Each grounded in evidence.
+- policyInterventionsSummary: Exactly 2 sentences condensing policyInterventions. Lead with the most impactful recommendation.
 - policyDataLimits: Honest description of what the data does NOT tell us for these segments and sectors.
+- policyDataLimitsSummary: Exactly 2 sentences condensing policyDataLimits. Be honest and specific.
 - recommendedTraining: 3-4 program-design recommendations (training pathways, partnerships, or pilot programs) the policymaker could fund or operate. Write in third-person analytical language ("This program would..."), NOT second person.
 
 For schema fields that don't apply to policy mode (skills, opportunities), return short third-person placeholder content describing aggregate workforce characteristics rather than personal data. Do not invent an individual.
