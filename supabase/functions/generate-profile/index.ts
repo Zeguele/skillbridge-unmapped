@@ -120,6 +120,7 @@ Deno.serve(async (req) => {
       const segments: string[] = Array.isArray(policyIntake?.segments) ? policyIntake.segments : [];
       const sectors: string[] = Array.isArray(policyIntake?.sectors) ? policyIntake.sectors : [];
       const priority: string = policyIntake?.priority || "(unspecified)";
+      const additionalObjective: string = (policyIntake?.additionalObjective || "").trim();
 
       system = `You are a World Bank labor economist generating a policy analysis for a program officer or policymaker.
 Write in analytical third-person language. No personal pronouns, no second-person addresses — this is not for an individual job seeker.
@@ -152,6 +153,7 @@ Country / region: ${country}
 Target population segments: ${segments.length ? segments.join("; ") : "(none specified — analyze general youth population)"}
 Sectors of interest: ${sectors.length ? sectors.join(", ") : "(all sectors)"}
 Primary objective: ${priority}
+Additional objectives or context from the policymaker: ${additionalObjective || "(none provided)"}
 Output language: ${targetLanguage}
 
 Country labor market (use these exact figures and cite them):

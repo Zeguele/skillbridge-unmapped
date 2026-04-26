@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
   COUNTRIES,
@@ -23,6 +24,7 @@ const EMPTY: PolicyIntakeData = {
   segments: [],
   sectors: [],
   priority: "",
+  additionalObjective: "",
   languagePref: "English",
 };
 
@@ -106,21 +108,31 @@ export default function PolicyIntakeForm({ initial, onSubmit }: Props) {
         {/* Priority */}
         <div className="space-y-2">
           <Label>What is your primary objective?</Label>
-          <div className="flex flex-wrap gap-2 pt-1">
-            {POLICY_PRIORITIES.map(p => {
-              const active = data.priority === p;
-              return (
-                <button
-                  type="button" key={p}
-                  onClick={() => update("priority", p)}
-                  className={`rounded-full border px-3 py-1.5 text-sm transition-colors ${
-                    active ? "border-primary bg-primary text-primary-foreground" : "border-border bg-background hover:bg-muted"
-                  }`}
-                >{p}</button>
-              );
-            })}
-          </div>
+          <Select value={data.priority} onValueChange={v => update("priority", v)}>
+            <SelectTrigger><SelectValue placeholder="Select an objective…" /></SelectTrigger>
+            <SelectContent>
+              {POLICY_PRIORITIES.map(p => (
+                <SelectItem key={p} value={p}>{p}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
+
+        {/* Additional objective */}
+        {data.priority && (
+          <div className="space-y-2">
+            <Label>Anything else you'd like the analysis to address?</Label>
+            <p className="text-xs text-muted-foreground">
+              Optional — describe any additional objectives, questions, or context for the analysis.
+            </p>
+            <Textarea
+              rows={3}
+              value={data.additionalObjective ?? ""}
+              onChange={e => update("additionalObjective", e.target.value)}
+              placeholder="e.g. focus on green-jobs transition, or compare two regions within the country."
+            />
+          </div>
+        )}
 
         <div className="flex justify-end pt-2">
           <Button onClick={() => onSubmit(data)} disabled={!canSubmit}>

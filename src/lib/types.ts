@@ -5,6 +5,7 @@ export interface PolicyIntakeData {
   segments: string[];
   sectors: string[];
   priority: string;
+  additionalObjective?: string;
   languagePref: string;
 }
 
