@@ -119,13 +119,28 @@ export default function MappedWorkforceIntelligence({ country, profile }: Props)
   }, [effectiveRows]);
 
   // ---- Top skills ----
+  // Color is tied to rank position (1st bar = teal, 2nd = blue, ...) so the top skill
+  // always reads as the visual lead regardless of which skill it is.
   const topSkills = useMemo(() => {
     const counts = new Map<string, number>();
     effectiveRows.forEach(r => (r.self_taught || []).forEach(s => counts.set(s, (counts.get(s) || 0) + 1)));
-    const sorted = [...counts.entries()].map(([name, count]) => ({ name, count })).sort((a, b) => b.count - a.count).slice(0, 6);
+    const sorted = [...counts.entries()].map(([name, count]) => ({ name, count })).sort((a, b) => b.count - a.count).slice(0, 12);
     const max = sorted[0]?.count || 1;
-    const colors = ["#1D9E75", "#1D9E75", "#378ADD", "#378ADD", "#EF9F27", "#D85A30"];
-    return sorted.map((s, i) => ({ ...s, pct: (s.count / max) * 100, color: colors[i] }));
+    const RANK_COLORS = [
+      "#1D9E75", // 1 teal
+      "#378ADD", // 2 blue
+      "#7F77DD", // 3 purple
+      "#EF9F27", // 4 amber
+      "#D85A30", // 5 coral
+      "#D4537E", // 6 pink
+      "#639922", // 7 green
+      "#185FA5", // 8 dark blue
+      "#BA7517", // 9 dark amber
+      "#993C1D", // 10 dark coral
+      "#534AB7", // 11 dark purple
+      "#085041", // 12 dark teal
+    ];
+    return sorted.map((s, i) => ({ ...s, pct: (s.count / max) * 100, color: RANK_COLORS[i] }));
   }, [effectiveRows]);
 
   // ---- Education distribution ----
@@ -243,7 +258,7 @@ export default function MappedWorkforceIntelligence({ country, profile }: Props)
             <div className="space-y-2">
               {topSkills.map(s => (
                 <div key={s.name} className="flex items-center gap-3 text-[12px]">
-                  <div className="w-[110px] shrink-0 truncate text-muted-foreground" title={s.name}>{s.name}</div>
+                  <div className="w-[140px] shrink-0 text-muted-foreground" title={s.name}>{s.name}</div>
                   <div className="relative h-3 flex-1 overflow-hidden rounded-sm bg-muted">
                     <div className="h-full rounded-sm" style={{ width: `${s.pct}%`, backgroundColor: s.color }} />
                   </div>
