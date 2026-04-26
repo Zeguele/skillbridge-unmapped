@@ -165,7 +165,7 @@ Country labor market (use these exact figures in your reasoning):
 
 Generate 3-4 realistic opportunities grounded in these sectors. For each skill assign a resilience score (0-100) reflecting automation/displacement resistance.
 
-Reminder: every youth-facing string ("summary", every "skills[].description", every "opportunities[].description", "portabilityReason") must address the reader as "you" — never use the name above, never use he/she/they.`;
+Reminder: write every output string in ${targetLanguage} (except taxonomy codes/titles, which stay in English). Every youth-facing string ("summary", every "skills[].description", every "opportunities[].description", "portabilityReason") must address the reader directly in second person — never use the name above, never use third-person pronouns.`;
 
     const resp = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
