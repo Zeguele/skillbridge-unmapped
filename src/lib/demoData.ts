@@ -11,5 +11,8 @@ export const DEMO_INTAKE: IntakeData = {
   selfTaughtSkills: ["Basic coding", "Machine/device repair", "Customer service", "Accounting/bookkeeping"],
   languages: ["English", "Twi"],
   digitalLevel: "Social media and messaging",
+  digitalSkills: ["Social media and messaging apps", "Basic phone use (calls, SMS)", "AI tools (ChatGPT, translation apps, etc.)"],
+  hasCertifications: false,
+  certificationsDescription: "",
   other: "I taught myself to code from YouTube videos on a shared mobile connection.",
 };
