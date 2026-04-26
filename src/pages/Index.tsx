@@ -130,6 +130,7 @@ const Index = () => {
       const msg = e instanceof Error ? e.message : "Failed to generate analysis";
       toast.error(msg);
       setStage("form");
+    }
   }
 
   async function handlePolicyCountryChange(newCountry: CountryKey) {
@@ -158,7 +159,6 @@ const Index = () => {
     } finally {
       setIsReloadingPolicy(false);
     }
-  }
   }
 
   const restart = () => {
