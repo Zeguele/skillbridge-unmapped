@@ -274,48 +274,55 @@ export default function ResultsView({ intake, policyIntake, profile, isDemo, use
             </div>
           </Card>
 
-          <div className="grid gap-3 md:grid-cols-3">
-            <ExpandableAnalysisCard
-              title="Skills gap diagnosis"
-              summary={profile.policySkillsGapSummary}
-              full={profile.policySkillsGap}
-            />
-            <ExpandableAnalysisCard
-              title="Recommended interventions"
-              summary={profile.policyInterventionsSummary}
-              full={profile.policyInterventions}
-            />
-            <ExpandableAnalysisCard
-              title="Data limitations"
-              summary={profile.policyDataLimitsSummary}
-              full={profile.policyDataLimits}
-            />
-          </div>
-
-          <div className="pt-3">
-            <h3 className="mb-4 text-sm font-medium">Econometric signals</h3>
+          <div
+            className={`transition-opacity duration-300 ${isReloading ? "pointer-events-none animate-pulse opacity-60" : "opacity-100"}`}
+            aria-busy={isReloading || undefined}
+          >
             <div className="grid gap-3 md:grid-cols-3">
-              <ExpandableSignalCard
-                label="Signal 1 · ILO ILOSTAT"
-                text={profile.signal1}
+              <ExpandableAnalysisCard
+                title="Skills gap diagnosis"
+                summary={profile.policySkillsGapSummary}
+                full={profile.policySkillsGap}
               />
-              <ExpandableSignalCard
-                label="Signal 2 · World Bank STEP / ILO"
-                text={profile.signal2}
+              <ExpandableAnalysisCard
+                title="Recommended interventions"
+                summary={profile.policyInterventionsSummary}
+                full={profile.policyInterventions}
               />
-              <ExpandableSignalCard
-                label="Signal 3 · Wittgenstein Centre 2025–2035"
-                text={profile.wittgensteinSignal}
+              <ExpandableAnalysisCard
+                title="Data limitations"
+                summary={profile.policyDataLimitsSummary}
+                full={profile.policyDataLimits}
+              />
+            </div>
+
+            <div className="pt-6">
+              <h3 className="mb-4 text-sm font-medium">Econometric signals</h3>
+              <div className="grid gap-3 md:grid-cols-3">
+                <ExpandableSignalCard
+                  label="Signal 1 · ILO ILOSTAT"
+                  text={profile.signal1}
+                />
+                <ExpandableSignalCard
+                  label="Signal 2 · World Bank STEP / ILO"
+                  text={profile.signal2}
+                />
+                <ExpandableSignalCard
+                  label="Signal 3 · Wittgenstein Centre 2025–2035"
+                  text={profile.wittgensteinSignal}
+                />
+              </div>
+            </div>
+
+            {/* Sector employment growth chart (AI-driven series + insights) */}
+            <div className="pt-6">
+              <SectorGrowthChart
+                country={intake.country}
+                selectedSectors={policyIntake?.sectors || []}
+                profile={profile}
               />
             </div>
           </div>
-
-          {/* NEW: Sector employment growth chart */}
-          <SectorGrowthChart
-            country={intake.country}
-            selectedSectors={policyIntake?.sectors || []}
-            profile={profile}
-          />
 
           {/* NEW: Aggregate workforce intelligence from real profiles */}
           <MappedWorkforceIntelligence country={intake.country} profile={profile} />
