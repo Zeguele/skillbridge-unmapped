@@ -9,7 +9,7 @@ import OpportunityCard from "./OpportunityCard";
 import SkillRow from "./SkillRow";
 import JobsNearYou from "./JobsNearYou";
 import LaborDemandPanel from "./LaborDemandPanel";
-import { useState, useMemo } from "react";
+import { useMemo } from "react";
 import { toast } from "sonner";
 import { Copy, RefreshCw, AlertTriangle } from "lucide-react";
 
