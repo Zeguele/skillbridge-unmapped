@@ -328,7 +328,7 @@ function buildCountryProfiles(
     const j = Math.floor(rand() * (i + 1));
     [eduPool[i], eduPool[j]] = [eduPool[j], eduPool[i]];
   }
-  const skillsByRow = pickSkillsEnsuringMin(count);
+  const skillsByRow = pickSkillsWeighted(country, count);
   const certCount = Math.round(count * 0.25);
   const certFlags: boolean[] = [...Array(certCount).fill(true), ...Array(count - certCount).fill(false)];
   for (let i = certFlags.length - 1; i > 0; i--) {
