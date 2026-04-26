@@ -3,7 +3,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Briefcase } from "lucide-react";
 import type { IntakeData } from "@/lib/types";
-import { matchJobs, fitTag, skillTypeLabel } from "@/lib/jobMatching";
+import { matchJobs, skillTypeLabel } from "@/lib/jobMatching";
 
 interface Props {
   intake: IntakeData;
