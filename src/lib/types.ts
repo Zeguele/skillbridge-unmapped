@@ -70,4 +70,10 @@ export interface Profile {
   policyDataLimits: string;
   policyDataLimitsSummary?: string;
   recommendedTraining: TrainingRecommendation[];
+  // Policymaker-only enrichment (Section 1 + insights, Section 2 narrative)
+  sectorGrowthData?: Record<string, number[]>; // sector -> 10 yearly % values (2016-2025)
+  fastestGrowingSector?: { name: string; avg_growth: number };
+  largestEmployerSector?: { name: string; workforce_share: number };
+  highestInformalitySector?: { name: string; informality_rate: number };
+  mappingInsight?: string;
 }

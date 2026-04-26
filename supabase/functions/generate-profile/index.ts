@@ -87,6 +87,28 @@ const PROFILE_TOOL = {
             additionalProperties: false,
           },
         },
+        // Policymaker-only enrichment fields. Optional so job-seeker mode is unaffected.
+        sectorGrowthData: {
+          type: "object",
+          description: "Map of sector name -> array of 10 numbers (annual employment growth % from 2016 to 2025).",
+          additionalProperties: { type: "array", items: { type: "number" } },
+        },
+        fastestGrowingSector: {
+          type: "object",
+          properties: { name: { type: "string" }, avg_growth: { type: "number" } },
+          required: ["name", "avg_growth"], additionalProperties: false,
+        },
+        largestEmployerSector: {
+          type: "object",
+          properties: { name: { type: "string" }, workforce_share: { type: "number" } },
+          required: ["name", "workforce_share"], additionalProperties: false,
+        },
+        highestInformalitySector: {
+          type: "object",
+          properties: { name: { type: "string" }, informality_rate: { type: "number" } },
+          required: ["name", "informality_rate"], additionalProperties: false,
+        },
+        mappingInsight: { type: "string", description: "3-4 sentence interpretation of aggregated youth profile data." },
       },
       required: [
         "summary","isco","esco","onet","skills","portability","portabilityReason",
