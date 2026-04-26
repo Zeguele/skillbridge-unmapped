@@ -1,7 +1,8 @@
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { COUNTRY_DATA } from "@/lib/countryData";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { COUNTRIES, COUNTRY_DATA, type CountryKey } from "@/lib/countryData";
 import type { IntakeData, PolicyIntakeData, Profile } from "@/lib/types";
 import { toSecondPerson } from "@/lib/voice";
 import MetricsGrid from "./MetricsGrid";
@@ -14,7 +15,7 @@ import SectorGrowthChart from "./SectorGrowthChart";
 import MappedWorkforceIntelligence from "./MappedWorkforceIntelligence";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
-import { Copy, RefreshCw, AlertTriangle, Printer } from "lucide-react";
+import { Copy, RefreshCw, AlertTriangle, Printer, Loader2 } from "lucide-react";
 
 interface Props {
   intake: IntakeData;
@@ -23,6 +24,8 @@ interface Props {
   isDemo?: boolean;
   userType?: "job_seeker" | "policy_officer";
   onRestart: () => void;
+  onCountryChange?: (country: CountryKey) => void;
+  isReloading?: boolean;
 }
 
 const initials = (name: string) =>
