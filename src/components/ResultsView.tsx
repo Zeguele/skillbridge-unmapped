@@ -22,6 +22,7 @@ interface Props {
   policyIntake?: PolicyIntakeData;
   profile: Profile;
   isDemo?: boolean;
+  isPolicyDemo?: boolean;
   userType?: "job_seeker" | "policy_officer";
   onRestart: () => void;
   onCountryChange?: (country: CountryKey) => void;
