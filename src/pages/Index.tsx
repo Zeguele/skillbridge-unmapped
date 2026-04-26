@@ -337,6 +337,8 @@ const Index = () => {
             isDemo={isDemo}
             userType={userType}
             onRestart={restart}
+            onCountryChange={userType === "policy_officer" ? handlePolicyCountryChange : undefined}
+            isReloading={isReloadingPolicy}
           />
         )}
       </main>
