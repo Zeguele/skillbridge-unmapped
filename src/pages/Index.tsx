@@ -190,6 +190,24 @@ const Index = ({ autoDemo }: IndexProps = {}) => {
     generateJobSeeker(DEMO_INTAKE, true);
   };
 
+  const startPolicyDemo = () => {
+    generatePolicy(DEMO_POLICY_INTAKE, true);
+  };
+
+  // Auto-trigger demo flows when arriving via /demo or /demo-policy
+  const autoRan = useRef(false);
+  useEffect(() => {
+    if (autoRan.current) return;
+    if (autoDemo === "job_seeker") {
+      autoRan.current = true;
+      startDemo();
+    } else if (autoDemo === "policy") {
+      autoRan.current = true;
+      startPolicyDemo();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [autoDemo]);
+
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b border-border">
