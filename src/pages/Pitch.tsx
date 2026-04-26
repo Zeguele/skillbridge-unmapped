@@ -5,6 +5,7 @@ import {
   ChevronRight,
   CheckCircle2,
   Compass,
+  Download,
   Layers,
   Link2,
   Network,
