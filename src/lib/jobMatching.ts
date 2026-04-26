@@ -170,9 +170,23 @@ export function matchJobs(intake: IntakeData): MatchResult {
     return s;
   };
 
-  const scored: ScoredJob[] = pool
+  let scored: ScoredJob[] = pool
     .map(job => ({ job, score: score(job) }))
+    .filter(s => s.score >= 70)
     .sort((a, b) => b.score - a.score);
+
+  // If too few good-fit jobs, expand to region and re-score
+  if (scored.length < 3 && !expandedToRegion) {
+    const regionPool = JOB_OPENINGS.filter(j => region.members.has(j.country) && eduOk(j));
+    const regionScored = regionPool
+      .map(job => ({ job, score: score(job) }))
+      .filter(s => s.score >= 70)
+      .sort((a, b) => b.score - a.score);
+    if (regionScored.length > scored.length) {
+      scored = regionScored;
+      expandedToRegion = true;
+    }
+  }
 
   return { jobs: scored, expandedToRegion, regionName: region.name };
 }
