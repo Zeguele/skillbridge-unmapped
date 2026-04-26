@@ -5,6 +5,7 @@ import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid,
 } from "recharts";
 import { supabase } from "@/integrations/supabase/client";
+import { ensureProfilesSeeded } from "@/lib/seedDatabase";
 import { JOB_OPENINGS } from "@/data/jobs";
 import type { CountryKey } from "@/lib/countryData";
 import type { Profile } from "@/lib/types";
@@ -58,6 +59,8 @@ export default function MappedWorkforceIntelligence({ country, profile }: Props)
   useEffect(() => {
     let active = true;
     (async () => {
+      await ensureProfilesSeeded();
+      if (!active) return;
       const { data, error } = await supabase
         .from("profiles")
         .select("id, country, education_level, self_taught, top_match_score, created_at")
