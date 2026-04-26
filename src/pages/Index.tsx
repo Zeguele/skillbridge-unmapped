@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -8,12 +9,16 @@ import LoadingScreen from "@/components/LoadingScreen";
 import ResultsView from "@/components/ResultsView";
 import { supabase } from "@/integrations/supabase/client";
 import { COUNTRY_DATA } from "@/lib/countryData";
-import { DEMO_INTAKE } from "@/lib/demoData";
+import { DEMO_INTAKE, DEMO_POLICY_INTAKE } from "@/lib/demoData";
 import type { IntakeData, PolicyIntakeData, Profile } from "@/lib/types";
 import type { CountryKey } from "@/lib/countryData";
 import { toast } from "sonner";
 import { Compass, ArrowLeft, UserRound, BarChart3, ArrowRight, Globe } from "lucide-react";
 import { LANGUAGES, useLang, type LanguageCode } from "@/lib/i18n";
+
+interface IndexProps {
+  autoDemo?: "job_seeker" | "policy";
+}
 
 type Stage = "role" | "form" | "loading" | "results";
 export type UserType = "job_seeker" | "policy_officer";
