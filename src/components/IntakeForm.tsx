@@ -216,11 +216,11 @@ export default function IntakeForm({ initial, onSubmit }: Props) {
 
         <div className="mt-8 flex items-center justify-between">
           <Button variant="ghost" onClick={back} disabled={step === 1}>
-            <ArrowLeft className="mr-1 h-4 w-4" /> Back
+            <ArrowLeft className="me-1 h-4 w-4" /> {t("form.back")}
           </Button>
           <Badge variant="secondary" className="hidden sm:inline-flex">{step}/4</Badge>
           <Button onClick={next} disabled={!canNext}>
-            {step === 4 ? "Generate profile" : "Next"} <ArrowRight className="ml-1 h-4 w-4" />
+            {step === 4 ? t("form.generate") : t("form.next")} <ArrowRight className="ms-1 h-4 w-4" />
           </Button>
         </div>
       </Card>
