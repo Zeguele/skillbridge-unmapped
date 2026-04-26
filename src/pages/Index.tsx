@@ -175,6 +175,7 @@ const Index = ({ autoDemo }: IndexProps = {}) => {
     setIntake(null);
     setPolicyIntake(null);
     setIsDemo(false);
+    setIsPolicyDemo(false);
     setPrefill(undefined);
   };
 
