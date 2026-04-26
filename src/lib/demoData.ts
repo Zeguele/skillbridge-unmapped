@@ -16,3 +16,23 @@ export const DEMO_INTAKE: IntakeData = {
   certificationsDescription: "",
   other: "I taught myself to code from YouTube videos on a shared mobile connection.",
 };
+
+export const DEMO_POLICY_INTAKE: PolicyIntakeData = {
+  country: "Ghana",
+  segments: [
+    "Youth with no formal schooling",
+    "Youth with primary education only",
+    "Youth in the informal economy",
+    "Youth in urban areas",
+  ],
+  sectors: [
+    "Agriculture",
+    "Construction",
+    "Repair & Maintenance",
+    "Creative & Digital",
+    "Retail & Sales",
+  ],
+  priority: "Formalize informal workers",
+  additionalObjective: "",
+  languagePref: "English",
+};
