@@ -9,6 +9,7 @@ import OpportunityCard from "./OpportunityCard";
 import SkillRow from "./SkillRow";
 import JobsNearYou from "./JobsNearYou";
 import LaborDemandPanel from "./LaborDemandPanel";
+import RecommendedTraining from "./RecommendedTraining";
 import { useMemo } from "react";
 import { toast } from "sonner";
 import { Copy, RefreshCw, AlertTriangle } from "lucide-react";
@@ -137,6 +138,9 @@ export default function ResultsView({ intake, profile, isDemo, userType = "job_s
 
           {/* Real job openings from dataset */}
           <JobsNearYou intake={intake} />
+
+          {/* Recommended training */}
+          <RecommendedTraining items={profile.recommendedTraining ?? []} />
 
           <div className="flex flex-wrap justify-center gap-3 pt-2">
             <Button variant="outline" onClick={() => copyAsText(intake, profile)}>
