@@ -44,7 +44,7 @@ export default function JobsNearYou({ intake }: Props) {
       <div>
         <h3 className="text-base font-semibold">Matching job openings {headerLocation}</h3>
         <p className="mt-1 text-xs text-muted-foreground">
-          Matched from real job data across low- and middle-income countries.
+          These roles match your current skills and education level. You could pursue any of them today.
         </p>
         {result.expandedToRegion && (
           <p className="mt-1 text-xs text-muted-foreground">
