@@ -54,7 +54,7 @@ function copyAsText(intake: IntakeData, profile: Profile) {
   toast.success("Profile copied to clipboard");
 }
 
-export default function ResultsView({ intake, profile, isDemo, userType = "job_seeker", onRestart }: Props) {
+export default function ResultsView({ intake, policyIntake, profile, isDemo, userType = "job_seeker", onRestart }: Props) {
   const view: "my" | "policy" = userType === "policy_officer" ? "policy" : "my";
   const stats = COUNTRY_DATA[intake.country];
 
