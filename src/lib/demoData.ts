@@ -1,4 +1,4 @@
-import type { IntakeData } from "./types";
+import type { IntakeData, PolicyIntakeData } from "./types";
 
 export const DEMO_INTAKE: IntakeData = {
   name: "Amara",
