@@ -50,6 +50,7 @@ All colors MUST be HSL.
 
     /* Surfaces */
     --metric-bg: 220 15% 97%;
+    --signal-bg: 36 33% 97%;
     --info: 200 90% 45%;
     --warning: 38 92% 55%;
 
