@@ -176,9 +176,35 @@ export default function ResultsView({ intake, policyIntake, profile, isDemo, use
           <Card className="p-5 sm:p-6">
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0">
-                <h2 className="text-xl font-semibold">
-                  Policy analysis — {intake.country}
-                </h2>
+                <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+                  <h2 className="text-xl font-semibold">
+                    Policy analysis —
+                  </h2>
+                  {onCountryChange ? (
+                    <Select
+                      value={intake.country}
+                      onValueChange={(v) => onCountryChange(v as CountryKey)}
+                      disabled={isReloading}
+                    >
+                      <SelectTrigger
+                        className="no-print h-8 w-auto gap-1.5 rounded-md border-border bg-background px-2.5 text-base font-semibold"
+                        aria-label="Select country"
+                      >
+                        <SelectValue />
+                        {isReloading && <Loader2 className="ml-1 h-3.5 w-3.5 animate-spin text-muted-foreground" />}
+                      </SelectTrigger>
+                      <SelectContent align="start">
+                        {COUNTRIES.map((c) => (
+                          <SelectItem key={c} value={c}>{c}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  ) : (
+                    <span className="text-xl font-semibold">{intake.country}</span>
+                  )}
+                  {/* Print-only static label for the country */}
+                  <span className="hidden text-xl font-semibold print:inline">{intake.country}</span>
+                </div>
                 <p className="mt-1 text-xs text-muted-foreground">
                   {new Date().toLocaleDateString()} · aggregate signals for program officers and policymakers
                 </p>
