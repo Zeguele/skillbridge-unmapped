@@ -22,6 +22,7 @@ interface Props {
   policyIntake?: PolicyIntakeData;
   profile: Profile;
   isDemo?: boolean;
+  isPolicyDemo?: boolean;
   userType?: "job_seeker" | "policy_officer";
   onRestart: () => void;
   onCountryChange?: (country: CountryKey) => void;
@@ -59,7 +60,7 @@ function copyAsText(intake: IntakeData, profile: Profile) {
   toast.success("Profile copied to clipboard");
 }
 
-export default function ResultsView({ intake, policyIntake, profile, isDemo, userType = "job_seeker", onRestart, onCountryChange, isReloading }: Props) {
+export default function ResultsView({ intake, policyIntake, profile, isDemo, isPolicyDemo, userType = "job_seeker", onRestart, onCountryChange, isReloading }: Props) {
   const view: "my" | "policy" = userType === "policy_officer" ? "policy" : "my";
   const stats = COUNTRY_DATA[intake.country];
 
@@ -80,6 +81,13 @@ export default function ResultsView({ intake, policyIntake, profile, isDemo, use
         <div className="flex items-start gap-2 rounded-lg border border-[hsl(var(--warning))]/40 bg-[hsl(var(--warning))]/10 p-3 text-sm">
           <AlertTriangle className="mt-0.5 h-4 w-4 flex-shrink-0 text-[hsl(var(--warning))]" />
           <span>This is a demo — meet Amara, the person this tool was built for.</span>
+        </div>
+      )}
+
+      {isPolicyDemo && (
+        <div className="flex items-start gap-2 rounded-lg border border-[hsl(var(--warning))]/40 bg-[hsl(var(--warning))]/10 p-3 text-sm">
+          <AlertTriangle className="mt-0.5 h-4 w-4 flex-shrink-0 text-[hsl(var(--warning))]" />
+          <span>This is a demo — exploring workforce data and policy signals for {intake.country}.</span>
         </div>
       )}
 

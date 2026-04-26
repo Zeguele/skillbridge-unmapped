@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -8,12 +9,16 @@ import LoadingScreen from "@/components/LoadingScreen";
 import ResultsView from "@/components/ResultsView";
 import { supabase } from "@/integrations/supabase/client";
 import { COUNTRY_DATA } from "@/lib/countryData";
-import { DEMO_INTAKE } from "@/lib/demoData";
+import { DEMO_INTAKE, DEMO_POLICY_INTAKE } from "@/lib/demoData";
 import type { IntakeData, PolicyIntakeData, Profile } from "@/lib/types";
 import type { CountryKey } from "@/lib/countryData";
 import { toast } from "sonner";
 import { Compass, ArrowLeft, UserRound, BarChart3, ArrowRight, Globe } from "lucide-react";
 import { LANGUAGES, useLang, type LanguageCode } from "@/lib/i18n";
+
+interface IndexProps {
+  autoDemo?: "job_seeker" | "policy";
+}
 
 type Stage = "role" | "form" | "loading" | "results";
 export type UserType = "job_seeker" | "policy_officer";
@@ -38,7 +43,7 @@ function policyToIntake(p: PolicyIntakeData, languagePref: string): IntakeData {
   };
 }
 
-const Index = () => {
+const Index = ({ autoDemo }: IndexProps = {}) => {
   const { t, lang, setLang, option } = useLang();
   const [stage, setStage] = useState<Stage>("role");
   const [userType, setUserType] = useState<UserType>("job_seeker");
@@ -46,6 +51,7 @@ const Index = () => {
   const [policyIntake, setPolicyIntake] = useState<PolicyIntakeData | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [isDemo, setIsDemo] = useState(false);
+  const [isPolicyDemo, setIsPolicyDemo] = useState(false);
   const [prefill, setPrefill] = useState<IntakeData | undefined>(undefined);
   const [isReloadingPolicy, setIsReloadingPolicy] = useState(false);
 
@@ -104,12 +110,14 @@ const Index = () => {
     }
   }
 
-  async function generatePolicy(data: PolicyIntakeData) {
+  async function generatePolicy(data: PolicyIntakeData, demo = false) {
     const enriched: PolicyIntakeData = { ...data, languagePref: option.promptName };
     const synthIntake = policyToIntake(enriched, option.promptName);
+    setUserType("policy_officer");
     setIntake(synthIntake);
     setPolicyIntake(enriched);
     setIsDemo(false);
+    setIsPolicyDemo(demo);
     setStage("loading");
     try {
       const { data: res, error } = await supabase.functions.invoke("generate-profile", {
@@ -167,6 +175,7 @@ const Index = () => {
     setIntake(null);
     setPolicyIntake(null);
     setIsDemo(false);
+    setIsPolicyDemo(false);
     setPrefill(undefined);
   };
 
@@ -180,6 +189,24 @@ const Index = () => {
     setUserType("job_seeker");
     generateJobSeeker(DEMO_INTAKE, true);
   };
+
+  const startPolicyDemo = () => {
+    generatePolicy(DEMO_POLICY_INTAKE, true);
+  };
+
+  // Auto-trigger demo flows when arriving via /demo or /demo-policy
+  const autoRan = useRef(false);
+  useEffect(() => {
+    if (autoRan.current) return;
+    if (autoDemo === "job_seeker") {
+      autoRan.current = true;
+      startDemo();
+    } else if (autoDemo === "policy") {
+      autoRan.current = true;
+      startPolicyDemo();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [autoDemo]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -307,10 +334,20 @@ const Index = () => {
               {t("landing.notSure")}
             </p>
 
-            <div className="mt-8 text-center">
-              <Button variant="ghost" size="sm" onClick={startDemo}>
-                {t("landing.demo")}
-              </Button>
+            <div className="mt-8 flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-sm">
+              <Link
+                to="/demo"
+                className="inline-flex items-center gap-1 text-[hsl(var(--primary))] hover:underline"
+              >
+                See a Job Seeker demo — meet Amara <ArrowRight className="h-3.5 w-3.5" />
+              </Link>
+              <span aria-hidden className="text-muted-foreground">·</span>
+              <Link
+                to="/demo-policy"
+                className="inline-flex items-center gap-1 text-[hsl(var(--primary))] hover:underline"
+              >
+                See a Policymaker demo — explore Ghana <ArrowRight className="h-3.5 w-3.5" />
+              </Link>
             </div>
 
             <p className="mt-8 text-center text-xs text-muted-foreground">
@@ -335,6 +372,7 @@ const Index = () => {
             policyIntake={policyIntake ?? undefined}
             profile={profile}
             isDemo={isDemo}
+            isPolicyDemo={isPolicyDemo}
             userType={userType}
             onRestart={restart}
             onCountryChange={userType === "policy_officer" ? handlePolicyCountryChange : undefined}
