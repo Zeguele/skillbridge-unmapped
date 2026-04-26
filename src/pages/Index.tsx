@@ -122,24 +122,24 @@ const Index = () => {
               </Card>
 
               <Card
-                onClick={() => pickRole("program_officer")}
+                onClick={() => pickRole("policy_officer")}
                 className="group flex cursor-pointer flex-col p-6 transition-all hover:-translate-y-0.5 hover:shadow-md"
               >
                 <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-lg bg-accent text-accent-foreground">
                   <BarChart3 className="h-5 w-5" />
                 </div>
-                <h2 className="text-lg font-semibold">Program Officer</h2>
+                <h2 className="text-lg font-semibold">Program Officer / Policymaker</h2>
                 <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                  I work with youth employment. Explore labor market signals, skills gaps, and intervention
-                  opportunities across regions using real econometric data.
+                  Analyze labor market signals, assess skills gaps, evaluate intervention strategies, and explore
+                  workforce data across regions to inform policy decisions and program design.
                 </p>
                 <div className="mt-6">
                   <Button
                     variant="outline"
                     className="w-full"
-                    onClick={(e) => { e.stopPropagation(); pickRole("program_officer"); }}
+                    onClick={(e) => { e.stopPropagation(); pickRole("policy_officer"); }}
                   >
-                    View dashboard <ArrowRight className="ml-1 h-4 w-4" />
+                    Explore data <ArrowRight className="ml-1 h-4 w-4" />
                   </Button>
                 </div>
               </Card>
