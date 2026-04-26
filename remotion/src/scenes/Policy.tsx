@@ -66,7 +66,7 @@ export default function Policy() {
           <div style={{ fontSize: 18, fontWeight: 600, color: COLORS.ink }}>Wage trend · weekly</div>
           <div style={{ marginTop: 24, height: 200, display: "flex", alignItems: "flex-end", gap: 8 }}>
             {TREND.map((v, i) => {
-              const grow = spring({ frame: frame - 10 - i * 3, fps, config: { damping: 22 } });
+              const grow = spring({ frame: frame - 5 - i * 1.5, fps, config: { damping: 18, stiffness: 180 } });
               return (
                 <div key={i} style={{
                   flex: 1, height: `${v * grow}%`,

@@ -21,8 +21,12 @@ export default function Switch() {
   const fadeOut = interpolate(frame, [195, 210], [1, 0], { extrapolateRight: "clamp" });
 
   const cards = frame < 80 ? GHANA : INDIA;
-  const flag = frame < 60 ? "🇬🇭" : "🇮🇳";
-  const label = frame < 60 ? "Ghana — Accra" : "India — Bengaluru";
+  const isGhana = frame < 60;
+  const flagGradient = isGhana
+    ? "linear-gradient(180deg, #006B3F 0%, #006B3F 33%, #FCD116 33%, #FCD116 66%, #CE1126 66%)"
+    : "linear-gradient(180deg, #FF9933 0%, #FF9933 33%, #FFFFFF 33%, #FFFFFF 66%, #138808 66%)";
+  const flagCode = isGhana ? "GH" : "IN";
+  const label = isGhana ? "Ghana — Accra" : "India — Bengaluru";
 
   return (
     <div style={{
@@ -43,15 +47,22 @@ export default function Switch() {
           width: 240, borderRadius: 999, background: COLORS.primary,
         }} />
         <div style={{ flex: 1, padding: "12px 18px", textAlign: "center", color: switchPos < 0.5 ? "#fff" : COLORS.ink, fontWeight: 600, fontSize: 22, position: "relative", zIndex: 1 }}>
-          🇬🇭 Ghana
+          GH · Ghana
         </div>
         <div style={{ flex: 1, padding: "12px 18px", textAlign: "center", color: switchPos > 0.5 ? "#fff" : COLORS.ink, fontWeight: 600, fontSize: 22, position: "relative", zIndex: 1 }}>
-          🇮🇳 India
+          IN · India
         </div>
       </div>
 
-      <div style={{ fontSize: 44, color: COLORS.ink, fontFamily: "DM Serif Display", marginTop: 4 }}>
-        {flag} {label}
+      <div style={{ fontSize: 44, color: COLORS.ink, fontFamily: "DM Serif Display", marginTop: 4, display: "flex", alignItems: "center", gap: 18 }}>
+        <div style={{
+          width: 56, height: 56, borderRadius: 10, background: flagGradient,
+          display: "flex", alignItems: "center", justifyContent: "center",
+          color: "#fff", fontSize: 18, fontWeight: 800, letterSpacing: 1,
+          border: "1px solid rgba(0,0,0,0.1)",
+          textShadow: "0 1px 2px rgba(0,0,0,0.4)",
+        }}>{flagCode}</div>
+        {label}
       </div>
 
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24, marginTop: 8 }}>

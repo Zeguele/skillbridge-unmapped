@@ -28,7 +28,13 @@ export default function Context() {
         display: "flex", alignItems: "center", justifyContent: "space-between", gap: 24,
       }}>
         <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
-          <div style={{ fontSize: 56 }}>🇬🇭</div>
+          <div style={{
+            width: 64, height: 64, borderRadius: 12,
+            background: `linear-gradient(180deg, #006B3F 0%, #006B3F 33%, #FCD116 33%, #FCD116 66%, #CE1126 66%)`,
+            display: "flex", alignItems: "center", justifyContent: "center",
+            color: "#fff", fontSize: 22, fontWeight: 800, letterSpacing: 1,
+            border: "1px solid rgba(0,0,0,0.1)",
+          }}>GH</div>
           <div>
             <div style={{ fontSize: 32, color: COLORS.ink, fontWeight: 600 }}>Ghana — Accra</div>
             <div style={{ fontSize: 22, color: COLORS.muted, marginTop: 4 }}>Urban Informal Economy</div>
