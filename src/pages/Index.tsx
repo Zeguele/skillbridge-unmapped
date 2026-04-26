@@ -334,10 +334,20 @@ const Index = ({ autoDemo }: IndexProps = {}) => {
               {t("landing.notSure")}
             </p>
 
-            <div className="mt-8 text-center">
-              <Button variant="ghost" size="sm" onClick={startDemo}>
-                {t("landing.demo")}
-              </Button>
+            <div className="mt-8 flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-sm">
+              <Link
+                to="/demo"
+                className="inline-flex items-center gap-1 text-[hsl(var(--primary))] hover:underline"
+              >
+                See a Job Seeker demo — meet Amara <ArrowRight className="h-3.5 w-3.5" />
+              </Link>
+              <span aria-hidden className="text-muted-foreground">·</span>
+              <Link
+                to="/demo-policy"
+                className="inline-flex items-center gap-1 text-[hsl(var(--primary))] hover:underline"
+              >
+                See a Policymaker demo — explore Ghana <ArrowRight className="h-3.5 w-3.5" />
+              </Link>
             </div>
 
             <p className="mt-8 text-center text-xs text-muted-foreground">
