@@ -53,7 +53,7 @@ function copyAsText(intake: IntakeData, profile: Profile) {
 }
 
 export default function ResultsView({ intake, profile, isDemo, userType = "job_seeker", onRestart }: Props) {
-  const view: "my" | "policy" = userType === "program_officer" ? "policy" : "my";
+  const view: "my" | "policy" = userType === "policy_officer" ? "policy" : "my";
   const stats = COUNTRY_DATA[intake.country];
 
   // Defensive sanitization: ensure youth-facing text is always in second person.
