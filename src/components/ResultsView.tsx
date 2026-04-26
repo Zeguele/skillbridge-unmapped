@@ -1,7 +1,8 @@
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { COUNTRY_DATA } from "@/lib/countryData";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { COUNTRIES, COUNTRY_DATA, type CountryKey } from "@/lib/countryData";
 import type { IntakeData, PolicyIntakeData, Profile } from "@/lib/types";
 import { toSecondPerson } from "@/lib/voice";
 import MetricsGrid from "./MetricsGrid";
@@ -14,7 +15,7 @@ import SectorGrowthChart from "./SectorGrowthChart";
 import MappedWorkforceIntelligence from "./MappedWorkforceIntelligence";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
-import { Copy, RefreshCw, AlertTriangle, Printer } from "lucide-react";
+import { Copy, RefreshCw, AlertTriangle, Printer, Loader2 } from "lucide-react";
 
 interface Props {
   intake: IntakeData;
@@ -23,6 +24,8 @@ interface Props {
   isDemo?: boolean;
   userType?: "job_seeker" | "policy_officer";
   onRestart: () => void;
+  onCountryChange?: (country: CountryKey) => void;
+  isReloading?: boolean;
 }
 
 const initials = (name: string) =>
@@ -56,7 +59,7 @@ function copyAsText(intake: IntakeData, profile: Profile) {
   toast.success("Profile copied to clipboard");
 }
 
-export default function ResultsView({ intake, policyIntake, profile, isDemo, userType = "job_seeker", onRestart }: Props) {
+export default function ResultsView({ intake, policyIntake, profile, isDemo, userType = "job_seeker", onRestart, onCountryChange, isReloading }: Props) {
   const view: "my" | "policy" = userType === "policy_officer" ? "policy" : "my";
   const stats = COUNTRY_DATA[intake.country];
 
@@ -173,9 +176,35 @@ export default function ResultsView({ intake, policyIntake, profile, isDemo, use
           <Card className="p-5 sm:p-6">
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0">
-                <h2 className="text-xl font-semibold">
-                  Policy analysis — {intake.country}
-                </h2>
+                <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+                  <h2 className="text-xl font-semibold">
+                    Policy analysis —
+                  </h2>
+                  {onCountryChange ? (
+                    <Select
+                      value={intake.country}
+                      onValueChange={(v) => onCountryChange(v as CountryKey)}
+                      disabled={isReloading}
+                    >
+                      <SelectTrigger
+                        className="no-print h-8 w-auto gap-1.5 rounded-md border-border bg-background px-2.5 text-base font-semibold"
+                        aria-label="Select country"
+                      >
+                        <SelectValue />
+                        {isReloading && <Loader2 className="ml-1 h-3.5 w-3.5 animate-spin text-muted-foreground" />}
+                      </SelectTrigger>
+                      <SelectContent align="start">
+                        {COUNTRIES.map((c) => (
+                          <SelectItem key={c} value={c}>{c}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  ) : (
+                    <span className="text-xl font-semibold">{intake.country}</span>
+                  )}
+                  {/* Print-only static label for the country */}
+                  <span className="hidden text-xl font-semibold print:inline">{intake.country}</span>
+                </div>
                 <p className="mt-1 text-xs text-muted-foreground">
                   {new Date().toLocaleDateString()} · aggregate signals for program officers and policymakers
                 </p>
@@ -245,48 +274,55 @@ export default function ResultsView({ intake, policyIntake, profile, isDemo, use
             </div>
           </Card>
 
-          <div className="grid gap-3 md:grid-cols-3">
-            <ExpandableAnalysisCard
-              title="Skills gap diagnosis"
-              summary={profile.policySkillsGapSummary}
-              full={profile.policySkillsGap}
-            />
-            <ExpandableAnalysisCard
-              title="Recommended interventions"
-              summary={profile.policyInterventionsSummary}
-              full={profile.policyInterventions}
-            />
-            <ExpandableAnalysisCard
-              title="Data limitations"
-              summary={profile.policyDataLimitsSummary}
-              full={profile.policyDataLimits}
-            />
-          </div>
-
-          <div className="pt-3">
-            <h3 className="mb-4 text-sm font-medium">Econometric signals</h3>
+          <div
+            className={`transition-opacity duration-300 ${isReloading ? "pointer-events-none animate-pulse opacity-60" : "opacity-100"}`}
+            aria-busy={isReloading || undefined}
+          >
             <div className="grid gap-3 md:grid-cols-3">
-              <ExpandableSignalCard
-                label="Signal 1 · ILO ILOSTAT"
-                text={profile.signal1}
+              <ExpandableAnalysisCard
+                title="Skills gap diagnosis"
+                summary={profile.policySkillsGapSummary}
+                full={profile.policySkillsGap}
               />
-              <ExpandableSignalCard
-                label="Signal 2 · World Bank STEP / ILO"
-                text={profile.signal2}
+              <ExpandableAnalysisCard
+                title="Recommended interventions"
+                summary={profile.policyInterventionsSummary}
+                full={profile.policyInterventions}
               />
-              <ExpandableSignalCard
-                label="Signal 3 · Wittgenstein Centre 2025–2035"
-                text={profile.wittgensteinSignal}
+              <ExpandableAnalysisCard
+                title="Data limitations"
+                summary={profile.policyDataLimitsSummary}
+                full={profile.policyDataLimits}
+              />
+            </div>
+
+            <div className="pt-6">
+              <h3 className="mb-4 text-sm font-medium">Econometric signals</h3>
+              <div className="grid gap-3 md:grid-cols-3">
+                <ExpandableSignalCard
+                  label="Signal 1 · ILO ILOSTAT"
+                  text={profile.signal1}
+                />
+                <ExpandableSignalCard
+                  label="Signal 2 · World Bank STEP / ILO"
+                  text={profile.signal2}
+                />
+                <ExpandableSignalCard
+                  label="Signal 3 · Wittgenstein Centre 2025–2035"
+                  text={profile.wittgensteinSignal}
+                />
+              </div>
+            </div>
+
+            {/* Sector employment growth chart (AI-driven series + insights) */}
+            <div className="pt-6">
+              <SectorGrowthChart
+                country={intake.country}
+                selectedSectors={policyIntake?.sectors || []}
+                profile={profile}
               />
             </div>
           </div>
-
-          {/* NEW: Sector employment growth chart */}
-          <SectorGrowthChart
-            country={intake.country}
-            selectedSectors={policyIntake?.sectors || []}
-            profile={profile}
-          />
 
           {/* NEW: Aggregate workforce intelligence from real profiles */}
           <MappedWorkforceIntelligence country={intake.country} profile={profile} />

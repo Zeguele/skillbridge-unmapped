@@ -10,6 +10,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { COUNTRY_DATA } from "@/lib/countryData";
 import { DEMO_INTAKE } from "@/lib/demoData";
 import type { IntakeData, PolicyIntakeData, Profile } from "@/lib/types";
+import type { CountryKey } from "@/lib/countryData";
 import { toast } from "sonner";
 import { Compass, ArrowLeft, UserRound, BarChart3, ArrowRight, Globe } from "lucide-react";
 import { LANGUAGES, useLang, type LanguageCode } from "@/lib/i18n";
@@ -46,6 +47,7 @@ const Index = () => {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [isDemo, setIsDemo] = useState(false);
   const [prefill, setPrefill] = useState<IntakeData | undefined>(undefined);
+  const [isReloadingPolicy, setIsReloadingPolicy] = useState(false);
 
   async function generateJobSeeker(data: IntakeData, demo: boolean) {
     const enriched: IntakeData = { ...data, languagePref: option.promptName };
@@ -128,6 +130,34 @@ const Index = () => {
       const msg = e instanceof Error ? e.message : "Failed to generate analysis";
       toast.error(msg);
       setStage("form");
+    }
+  }
+
+  async function handlePolicyCountryChange(newCountry: CountryKey) {
+    if (!policyIntake || policyIntake.country === newCountry) return;
+    const updated: PolicyIntakeData = { ...policyIntake, country: newCountry };
+    setPolicyIntake(updated);
+    setIntake(prev => prev ? { ...prev, country: newCountry } : prev);
+    setIsReloadingPolicy(true);
+    try {
+      const { data: res, error } = await supabase.functions.invoke("generate-profile", {
+        body: {
+          mode: "policy",
+          policyIntake: updated,
+          countryStats: COUNTRY_DATA[newCountry],
+          languagePromptName: option.promptName,
+          languageCode: lang,
+        },
+      });
+      if (error) throw error;
+      if (res?.error) throw new Error(res.error);
+      if (!res?.profile) throw new Error("No analysis returned");
+      setProfile(res.profile as Profile);
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : "Failed to update analysis";
+      toast.error(msg);
+    } finally {
+      setIsReloadingPolicy(false);
     }
   }
 
@@ -307,6 +337,8 @@ const Index = () => {
             isDemo={isDemo}
             userType={userType}
             onRestart={restart}
+            onCountryChange={userType === "policy_officer" ? handlePolicyCountryChange : undefined}
+            isReloading={isReloadingPolicy}
           />
         )}
       </main>
