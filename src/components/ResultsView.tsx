@@ -14,7 +14,7 @@ import SectorGrowthChart from "./SectorGrowthChart";
 import MappedWorkforceIntelligence from "./MappedWorkforceIntelligence";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
-import { Copy, RefreshCw, AlertTriangle } from "lucide-react";
+import { Copy, RefreshCw, AlertTriangle, Printer } from "lucide-react";
 
 interface Props {
   intake: IntakeData;
