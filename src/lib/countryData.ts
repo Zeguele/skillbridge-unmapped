@@ -67,3 +67,42 @@ export const DIGITAL_SKILLS = [
 // Note: language preference is now driven by the global LanguageProvider (src/lib/i18n.tsx).
 // Kept here as a deprecated alias for any legacy import.
 export const LANGUAGE_PREFS = ["English", "Français", "العربية", "Español", "Português", "हिन्दी"] as const;
+
+// ---------------------------------------------------------------------------
+// Policymaker intake options
+// ---------------------------------------------------------------------------
+
+export const POLICY_SEGMENTS = [
+  "Youth with no formal schooling",
+  "Youth with primary education only",
+  "Youth with secondary education",
+  "Youth with vocational / technical training",
+  "Youth in the informal economy",
+  "Youth in rural areas",
+  "Youth in urban areas",
+  "Young women specifically",
+  "Displaced or migrant youth",
+] as const;
+
+// Sectors must match the dataset values used in src/data/jobs.ts
+export const POLICY_SECTORS = [
+  "Agriculture",
+  "Construction",
+  "Creative & Digital",
+  "Hospitality",
+  "ICT Services",
+  "Manufacturing",
+  "Personal Services",
+  "Repair & Maintenance",
+  "Retail & Sales",
+  "Transportation",
+] as const;
+
+export const POLICY_PRIORITIES = [
+  "Reduce youth unemployment",
+  "Formalize informal workers",
+  "Upskill existing workforce",
+  "Connect skills to job openings",
+  "Design a new training program",
+  "Assess automation readiness",
+] as const;

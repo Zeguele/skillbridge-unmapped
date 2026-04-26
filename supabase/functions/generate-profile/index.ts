@@ -99,17 +99,71 @@ Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const { intake, countryStats, languagePromptName } = await req.json();
+    const { mode, intake, policyIntake, countryStats, languagePromptName } = await req.json();
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY not configured");
+
+    const isPolicy = mode === "policy";
 
     // Resolve target language: explicit override from client > intake.languagePref > English.
     const targetLanguage: string =
       (typeof languagePromptName === "string" && languagePromptName.trim()) ||
       (typeof intake?.languagePref === "string" && intake.languagePref.trim()) ||
+      (typeof policyIntake?.languagePref === "string" && policyIntake.languagePref.trim()) ||
       "English";
 
-    const system = `You are a labor-market analyst building a portable skills profile for a young person.
+    let system: string;
+    let user: string;
+
+    if (isPolicy) {
+      const country = policyIntake?.country || "(unspecified)";
+      const segments: string[] = Array.isArray(policyIntake?.segments) ? policyIntake.segments : [];
+      const sectors: string[] = Array.isArray(policyIntake?.sectors) ? policyIntake.sectors : [];
+      const priority: string = policyIntake?.priority || "(unspecified)";
+
+      system = `You are a World Bank labor economist generating a policy analysis for a program officer or policymaker.
+Write in analytical third-person language. No personal pronouns, no second-person addresses — this is not for an individual job seeker.
+Cite data sources where relevant: ILO ILOSTAT, World Bank WDI, World Bank STEP, and Wittgenstein Centre 2025–2035 projections.
+Be honest, grounded, and specific to the country and selected segments — do not generalize.
+
+LANGUAGE — MANDATORY:
+Write ALL output text in ${targetLanguage}. Every human-readable string in the tool call (summary, signal1, signal2, wittgensteinSignal, policySkillsGap, policyInterventions, policyDataLimits, marketContext, portabilityReason, every skills[].description, skills[].name, every opportunities[].description, opportunities[].title, recommendedTraining[].*) MUST be written in ${targetLanguage}.
+Exception: taxonomy codes and titles (isco.code, isco.title, esco.label, onet.code, onet.title) MUST stay in English — they are international identifiers. For policy mode they are not displayed but the schema still requires them: return generic placeholders like ISCO "0000" / "Not applicable — policy analysis", ESCO "Not applicable", O*NET "00-0000.00" / "Not applicable".
+If ${targetLanguage} is Arabic, write in Modern Standard Arabic. If Hindi, write in Devanagari script.
+
+CONTENT REQUIREMENTS:
+- summary: 2-3 sentence executive overview of the policy challenge for ${country}, focused on the selected segments and priority.
+- signal1: ILO ILOSTAT interpretation of wage floor and informal-economy share, with the specific figures.
+- signal2: Returns to education and skills (World Bank STEP / ILO task indices) for the selected segments.
+- wittgensteinSignal: Wittgenstein Centre 2025–2035 education projection insight relevant to ${country} and the segments.
+- policySkillsGap: Specific skills-gap diagnosis for the selected segments in the selected sectors.
+- policyInterventions: 2-3 concrete intervention strategies tied to the primary objective (${priority}). Each grounded in evidence.
+- policyDataLimits: Honest description of what the data does NOT tell us for these segments and sectors.
+- recommendedTraining: 3-4 program-design recommendations (training pathways, partnerships, or pilot programs) the policymaker could fund or operate. Write in third-person analytical language ("This program would..."), NOT second person.
+
+For schema fields that don't apply to policy mode (skills, opportunities), return short third-person placeholder content describing aggregate workforce characteristics rather than personal data. Do not invent an individual.
+
+Numeric rules: matchScore and resilience must be whole integers 0-100.
+
+Return ONLY a tool call to build_profile. No markdown, no prose.`;
+
+      user = `Policy analysis request:
+Country / region: ${country}
+Target population segments: ${segments.length ? segments.join("; ") : "(none specified — analyze general youth population)"}
+Sectors of interest: ${sectors.length ? sectors.join(", ") : "(all sectors)"}
+Primary objective: ${priority}
+Output language: ${targetLanguage}
+
+Country labor market (use these exact figures and cite them):
+- Youth unemployment: ${countryStats.youthUnemployment}% (ILO ILOSTAT)
+- Informal economy: ${countryStats.informalEconomy}% (ILO ILOSTAT)
+- GDP growth: ${countryStats.gdpGrowth}% (World Bank WDI)
+- Wage floor: $${countryStats.wageFloor}/hr (ILO ILOSTAT)
+- High-growth sectors: ${countryStats.sectors.join(", ")}
+
+Generate a policy analysis grounded in these segments, sectors, and the primary objective. Do NOT generate an individual skills profile — this is aggregate analysis for program design.`;
+    } else {
+      system = `You are a labor-market analyst building a portable skills profile for a young person.
 Use plain, non-expert language. Be honest and grounded — opportunities must be realistic for the country, not aspirational.
 Map skills to ILO ISCO-08, ESCO, and O*NET. Provide concrete wage ranges in USD using local context.
 
@@ -144,7 +198,7 @@ Numeric rules:
 
 Return ONLY a tool call to build_profile. No markdown, no prose.`;
 
-    const user = `Person (the name below is INTERNAL CONTEXT ONLY — never write it in any youth-facing field):
+      user = `Person (the name below is INTERNAL CONTEXT ONLY — never write it in any youth-facing field):
 Name: ${intake.name || "(anonymous)"}
 Country: ${intake.country}
 Language preference: ${targetLanguage}
@@ -166,6 +220,7 @@ Country labor market (use these exact figures in your reasoning):
 Generate 3-4 realistic opportunities grounded in these sectors. For each skill assign a resilience score (0-100) reflecting automation/displacement resistance.
 
 Reminder: write every output string in ${targetLanguage} (except taxonomy codes/titles, which stay in English). Every youth-facing string ("summary", every "skills[].description", every "opportunities[].description", "portabilityReason") must address the reader directly in second person — never use the name above, never use third-person pronouns.`;
+    }
 
     const resp = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",

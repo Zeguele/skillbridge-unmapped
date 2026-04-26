@@ -192,12 +192,16 @@ export function matchJobs(intake: IntakeData): MatchResult {
 }
 
 // Aggregate stats for policymaker view, scoped to country (or region fallback)
-export function aggregateForCountry(country: CountryKey) {
+// Optionally filter by a set of sectors of interest.
+export function aggregateForCountry(country: CountryKey, sectorFilter?: string[]) {
   const isOther = country.startsWith("Other ");
   const region = regionOf(country);
-  const pool = isOther
+  const basePool = isOther
     ? JOB_OPENINGS.filter(j => region.members.has(j.country))
     : JOB_OPENINGS.filter(j => j.country === country);
+  const pool = sectorFilter && sectorFilter.length > 0
+    ? basePool.filter(j => sectorFilter.includes(j.sector))
+    : basePool;
 
   const total = pool.length;
   const bySectorMap = new Map<string, number>();

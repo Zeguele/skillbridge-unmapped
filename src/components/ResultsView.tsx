@@ -2,7 +2,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { COUNTRY_DATA } from "@/lib/countryData";
-import type { IntakeData, Profile } from "@/lib/types";
+import type { IntakeData, PolicyIntakeData, Profile } from "@/lib/types";
 import { toSecondPerson } from "@/lib/voice";
 import MetricsGrid from "./MetricsGrid";
 import OpportunityCard from "./OpportunityCard";
@@ -16,6 +16,7 @@ import { Copy, RefreshCw, AlertTriangle } from "lucide-react";
 
 interface Props {
   intake: IntakeData;
+  policyIntake?: PolicyIntakeData;
   profile: Profile;
   isDemo?: boolean;
   userType?: "job_seeker" | "policy_officer";
@@ -53,7 +54,7 @@ function copyAsText(intake: IntakeData, profile: Profile) {
   toast.success("Profile copied to clipboard");
 }
 
-export default function ResultsView({ intake, profile, isDemo, userType = "job_seeker", onRestart }: Props) {
+export default function ResultsView({ intake, policyIntake, profile, isDemo, userType = "job_seeker", onRestart }: Props) {
   const view: "my" | "policy" = userType === "policy_officer" ? "policy" : "my";
   const stats = COUNTRY_DATA[intake.country];
 
@@ -153,22 +154,55 @@ export default function ResultsView({ intake, profile, isDemo, userType = "job_s
         </>
       ) : (
         <>
-          <div className="rounded-lg border border-border bg-secondary p-3 text-sm">
-            Aggregate view for program officers — {intake.country}.
-          </div>
-
-          {/* Taxonomy codes — moved here from My view */}
-          <Card className="p-5">
-            <h3 className="mb-2 text-sm font-semibold">International taxonomy mapping</h3>
-            <div className="flex flex-wrap gap-2">
-              <Badge className="bg-[hsl(var(--info))] text-white hover:bg-[hsl(var(--info))]">ISCO-08 · {profile.isco.code} · {profile.isco.title}</Badge>
-              <Badge className="bg-primary text-primary-foreground hover:bg-primary">ESCO · {profile.esco.label}</Badge>
-              <Badge className="bg-[hsl(var(--warning))] text-white hover:bg-[hsl(var(--warning))]">O*NET · {profile.onet.code} · {profile.onet.title}</Badge>
-            </div>
-            <p className="mt-3 text-xs text-muted-foreground">
-              Portability: {profile.portability} — {profile.portabilityReason}
+          {/* Policy analysis summary */}
+          <Card className="p-5 sm:p-6">
+            <h2 className="text-xl font-semibold">
+              Policy analysis — {intake.country}
+            </h2>
+            <p className="mt-1 text-xs text-muted-foreground">
+              {new Date().toLocaleDateString()} · aggregate signals for program officers and policymakers
             </p>
-            <p className="mt-3 border-t border-border pt-3 text-xs text-muted-foreground">
+
+            {policyIntake && (
+              <div className="mt-4 space-y-3">
+                {policyIntake.segments.length > 0 && (
+                  <div>
+                    <div className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                      Population segments
+                    </div>
+                    <div className="flex flex-wrap gap-1.5">
+                      {policyIntake.segments.map(s => (
+                        <Badge key={s} variant="secondary" className="font-normal">{s}</Badge>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {policyIntake.sectors.length > 0 && (
+                  <div>
+                    <div className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                      Sectors of interest
+                    </div>
+                    <div className="flex flex-wrap gap-1.5">
+                      {policyIntake.sectors.map(s => (
+                        <Badge key={s} className="bg-primary/10 text-primary hover:bg-primary/10 font-normal">{s}</Badge>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {policyIntake.priority && (
+                  <div>
+                    <div className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                      Primary objective
+                    </div>
+                    <Badge className="bg-primary text-primary-foreground hover:bg-primary">
+                      {policyIntake.priority}
+                    </Badge>
+                  </div>
+                )}
+              </div>
+            )}
+
+            <p className="mt-4 border-t border-border pt-3 text-xs text-muted-foreground">
               You are viewing aggregate signals for this profile type. To see the youth-facing version, start over and select Job Seeker on the home page.
             </p>
           </Card>
@@ -214,8 +248,11 @@ export default function ResultsView({ intake, profile, isDemo, userType = "job_s
             </Card>
           </div>
 
-          {/* Aggregate labor demand from dataset */}
-          <LaborDemandPanel country={intake.country} />
+          {/* Aggregate labor demand from dataset, filtered to selected sectors when present */}
+          <LaborDemandPanel
+            country={intake.country}
+            sectorFilter={policyIntake?.sectors}
+          />
 
           <div className="flex justify-center pt-2">
             <Button variant="ghost" onClick={onRestart}>
