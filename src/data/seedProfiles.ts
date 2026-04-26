@@ -339,7 +339,7 @@ function buildCountryProfiles(
   const out: SeedProfile[] = [];
   for (let i = 0; i < count; i++) {
     const skills = skillsByRow[i];
-    const sectors = Array.from(new Set(skills.flatMap(s => SKILL_TO_SECTORS[s] || [])));
+    const sectors: string[] = Array.from(new Set<string>(skills.flatMap(s => SKILL_TO_SECTORS[s] || [])));
     const hasCert = certFlags[i];
     out.push({
       id: uuid(),
