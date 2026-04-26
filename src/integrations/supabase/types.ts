@@ -16,6 +16,7 @@ export type Database = {
     Tables: {
       profiles: {
         Row: {
+          certifications_description: string | null
           country: string
           created_at: string
           digital_level: string | null
@@ -31,6 +32,7 @@ export type Database = {
           top_match_score: number | null
         }
         Insert: {
+          certifications_description?: string | null
           country: string
           created_at?: string
           digital_level?: string | null
@@ -46,6 +48,7 @@ export type Database = {
           top_match_score?: number | null
         }
         Update: {
+          certifications_description?: string | null
           country?: string
           created_at?: string
           digital_level?: string | null
