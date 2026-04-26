@@ -10,6 +10,8 @@ import SkillRow from "./SkillRow";
 import JobsNearYou from "./JobsNearYou";
 import LaborDemandPanel from "./LaborDemandPanel";
 import RecommendedTraining from "./RecommendedTraining";
+import SectorGrowthChart from "./SectorGrowthChart";
+import MappedWorkforceIntelligence from "./MappedWorkforceIntelligence";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import { Copy, RefreshCw, AlertTriangle } from "lucide-react";
@@ -263,6 +265,16 @@ export default function ResultsView({ intake, policyIntake, profile, isDemo, use
               />
             </div>
           </div>
+
+          {/* NEW: Sector employment growth chart */}
+          <SectorGrowthChart
+            country={intake.country}
+            selectedSectors={policyIntake?.sectors || []}
+            profile={profile}
+          />
+
+          {/* NEW: Aggregate workforce intelligence from real profiles */}
+          <MappedWorkforceIntelligence country={intake.country} profile={profile} />
 
           {/* Aggregate labor demand from dataset, filtered to selected sectors when present */}
           <LaborDemandPanel
