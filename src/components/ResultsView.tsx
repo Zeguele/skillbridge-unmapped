@@ -164,6 +164,9 @@ export default function ResultsView({ intake, profile, isDemo, userType = "job_s
             <p className="mt-3 text-xs text-muted-foreground">
               Portability: {profile.portability} — {profile.portabilityReason}
             </p>
+            <p className="mt-3 border-t border-border pt-3 text-xs text-muted-foreground">
+              You are viewing aggregate signals for this profile type. To see the youth-facing version, start over and select Job Seeker.
+            </p>
           </Card>
 
           <MetricsGrid stats={stats} country={intake.country} />
