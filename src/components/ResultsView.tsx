@@ -277,3 +277,50 @@ export default function ResultsView({ intake, policyIntake, profile, isDemo, use
     </div>
   );
 }
+
+function ExpandableAnalysisCard({ title, summary, full }: { title: string; summary?: string; full: string }) {
+  const [open, setOpen] = useState(false);
+  const hasSummary = !!(summary && summary.trim());
+  const showToggle = hasSummary && full && full.trim() !== summary?.trim();
+  return (
+    <Card className="p-5">
+      <h4 className="mb-2 text-sm font-semibold">{title}</h4>
+      <p className="text-sm text-muted-foreground">
+        {open || !hasSummary ? full : summary}
+      </p>
+      {showToggle && (
+        <button
+          type="button"
+          onClick={() => setOpen(o => !o)}
+          className="mt-3 inline-flex items-center gap-1 text-xs font-medium text-primary hover:underline"
+        >
+          {open ? "Show less" : "Read full analysis →"}
+        </button>
+      )}
+    </Card>
+  );
+}
+
+function ExpandableSignalCard({ label, text }: { label: string; text: string }) {
+  const [open, setOpen] = useState(false);
+  const trimmed = (text || "").trim();
+  const match = trimmed.match(/^[\s\S]*?[.!?](?:\s|$)/);
+  const firstSentence = match ? match[0].trim() : trimmed;
+  const hasMore = firstSentence.length < trimmed.length;
+  return (
+    <Card className="p-5">
+      <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">{label}</div>
+      <p className="text-sm">{open || !hasMore ? trimmed : firstSentence}</p>
+      {hasMore && (
+        <button
+          type="button"
+          onClick={() => setOpen(o => !o)}
+          className="mt-3 inline-flex items-center gap-1 text-xs font-medium text-primary hover:underline"
+        >
+          {open ? "Show less" : "Read more →"}
+        </button>
+      )}
+    </Card>
+  );
+}
+
