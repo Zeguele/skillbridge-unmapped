@@ -17,6 +17,7 @@ interface Props {
   intake: IntakeData;
   profile: Profile;
   isDemo?: boolean;
+  userType?: "job_seeker" | "program_officer";
   onRestart: () => void;
 }
 
@@ -51,8 +52,8 @@ function copyAsText(intake: IntakeData, profile: Profile) {
   toast.success("Profile copied to clipboard");
 }
 
-export default function ResultsView({ intake, profile, isDemo, onRestart }: Props) {
-  const [view, setView] = useState<"my" | "policy">("my");
+export default function ResultsView({ intake, profile, isDemo, userType = "job_seeker", onRestart }: Props) {
+  const view: "my" | "policy" = userType === "program_officer" ? "policy" : "my";
   const stats = COUNTRY_DATA[intake.country];
 
   // Defensive sanitization: ensure youth-facing text is always in second person.
@@ -74,21 +75,6 @@ export default function ResultsView({ intake, profile, isDemo, onRestart }: Prop
           <span>This is a demo — meet Amara, the person this tool was built for.</span>
         </div>
       )}
-
-      {/* View toggle */}
-      <div className="flex justify-center">
-        <div className="inline-flex rounded-full border border-border p-1">
-          {(["my","policy"] as const).map(v => (
-            <button
-              key={v}
-              onClick={() => setView(v)}
-              className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
-                view === v ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"
-              }`}
-            >{v === "my" ? "My view" : "Policymaker view"}</button>
-          ))}
-        </div>
-      </div>
 
       {view === "my" ? (
         <>
