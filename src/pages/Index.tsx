@@ -130,7 +130,35 @@ const Index = () => {
       const msg = e instanceof Error ? e.message : "Failed to generate analysis";
       toast.error(msg);
       setStage("form");
+  }
+
+  async function handlePolicyCountryChange(newCountry: CountryKey) {
+    if (!policyIntake || policyIntake.country === newCountry) return;
+    const updated: PolicyIntakeData = { ...policyIntake, country: newCountry };
+    setPolicyIntake(updated);
+    setIntake(prev => prev ? { ...prev, country: newCountry } : prev);
+    setIsReloadingPolicy(true);
+    try {
+      const { data: res, error } = await supabase.functions.invoke("generate-profile", {
+        body: {
+          mode: "policy",
+          policyIntake: updated,
+          countryStats: COUNTRY_DATA[newCountry],
+          languagePromptName: option.promptName,
+          languageCode: lang,
+        },
+      });
+      if (error) throw error;
+      if (res?.error) throw new Error(res.error);
+      if (!res?.profile) throw new Error("No analysis returned");
+      setProfile(res.profile as Profile);
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : "Failed to update analysis";
+      toast.error(msg);
+    } finally {
+      setIsReloadingPolicy(false);
     }
+  }
   }
 
   const restart = () => {
