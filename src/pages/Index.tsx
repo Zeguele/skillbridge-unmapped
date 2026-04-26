@@ -47,6 +47,7 @@ const Index = () => {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [isDemo, setIsDemo] = useState(false);
   const [prefill, setPrefill] = useState<IntakeData | undefined>(undefined);
+  const [isReloadingPolicy, setIsReloadingPolicy] = useState(false);
 
   async function generateJobSeeker(data: IntakeData, demo: boolean) {
     const enriched: IntakeData = { ...data, languagePref: option.promptName };
