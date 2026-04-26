@@ -66,8 +66,35 @@ const Index = () => {
       if (error) throw error;
       if (res?.error) throw new Error(res.error);
       if (!res?.profile) throw new Error("No profile returned");
-      setProfile(res.profile as Profile);
+      const generated = res.profile as Profile;
+      setProfile(generated);
       setStage("results");
+
+      // Persist anonymized profile for Policymaker dashboard aggregates.
+      // Skip the demo profile so demo runs don't pollute real data.
+      if (!demo) {
+        try {
+          const matchScores = (generated.opportunities || []).map(o => o.matchScore || 0);
+          const topMatchScore = matchScores.length ? Math.max(...matchScores) : null;
+          const sectorsMatched = Array.from(new Set((generated.opportunities || []).map(o => o.title))).slice(0, 10);
+          await supabase.from("profiles").insert({
+            country: enriched.country,
+            education_level: enriched.education,
+            field_of_study: enriched.fieldOfStudy,
+            experience: enriched.experience,
+            self_taught: enriched.selfTaughtSkills || [],
+            languages: enriched.languages || [],
+            digital_level: enriched.digitalLevel,
+            digital_skills: enriched.digitalSkills || [],
+            has_certifications: !!enriched.hasCertifications,
+            sectors_matched: sectorsMatched,
+            top_match_score: topMatchScore,
+          });
+        } catch (persistErr) {
+          // Non-fatal: aggregate persistence failure shouldn't block the user's results.
+          console.warn("Profile persistence failed (non-fatal):", persistErr);
+        }
+      }
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : "Failed to generate profile";
       toast.error(msg);
