@@ -54,4 +54,14 @@ export const DIGITAL_LEVELS = [
   "Basic computer use","Spreadsheets and data","Basic coding/web","Advanced digital",
 ];
 
+export const DIGITAL_SKILLS = [
+  "Basic phone use (calls, SMS)",
+  "Social media and messaging apps",
+  "Basic computer use (email, documents)",
+  "Spreadsheets and data tools",
+  "Basic coding / web development",
+  "Video editing / content creation",
+  "AI tools (ChatGPT, translation apps, etc.)",
+];
+
 export const LANGUAGE_PREFS = ["English", "Français", "Kiswahili", "Arabic"] as const;

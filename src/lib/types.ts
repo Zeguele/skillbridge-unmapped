@@ -10,7 +10,18 @@ export interface IntakeData {
   selfTaughtSkills: string[];
   languages: string[];
   digitalLevel: string;
+  digitalSkills: string[];
+  hasCertifications: boolean;
+  certificationsDescription: string;
   other: string;
+}
+
+export interface TrainingRecommendation {
+  title: string;
+  why: string;
+  duration: string;
+  format: string;
+  impact: string;
 }
 
 export interface ProfileSkill {
@@ -46,4 +57,5 @@ export interface Profile {
   policySkillsGap: string;
   policyInterventions: string;
   policyDataLimits: string;
+  recommendedTraining: TrainingRecommendation[];
 }

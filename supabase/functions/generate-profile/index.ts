@@ -68,11 +68,27 @@ const PROFILE_TOOL = {
         policySkillsGap: { type: "string" },
         policyInterventions: { type: "string" },
         policyDataLimits: { type: "string" },
+        recommendedTraining: {
+          type: "array",
+          description: "3-4 short, realistic training opportunities tailored to the user.",
+          items: {
+            type: "object",
+            properties: {
+              title: { type: "string" },
+              why: { type: "string", description: "One sentence in second person ('you')." },
+              duration: { type: "string" },
+              format: { type: "string" },
+              impact: { type: "string" },
+            },
+            required: ["title", "why", "duration", "format", "impact"],
+            additionalProperties: false,
+          },
+        },
       },
       required: [
         "summary","isco","esco","onet","skills","portability","portabilityReason",
         "marketContext","opportunities","signal1","signal2","wittgensteinSignal",
-        "policySkillsGap","policyInterventions","policyDataLimits",
+        "policySkillsGap","policyInterventions","policyDataLimits","recommendedTraining",
       ],
       additionalProperties: false,
     },
@@ -117,6 +133,8 @@ All youth-facing text must use grammatically correct second person. The subject 
 
 Policymaker-only fields (signal1, signal2, wittgensteinSignal, policySkillsGap, policyInterventions, policyDataLimits) MUST stay in third-person analytical language with data citations. Do NOT use "you" in those fields.
 
+For recommendedTraining, suggest 3-4 specific, realistic training opportunities that would build on what the user already knows. Do not suggest university degrees or long programs — focus on short, accessible training that exists in their country and context. Each recommendation should feel like a natural next step, not a stretch. Write all text in second person.
+
 Numeric rules:
   - Return opportunity matchScore as whole integers from 0 to 100 (e.g. 75, NOT 0.75).
   - Skill resilience must also be a whole integer from 0 to 100.
@@ -131,7 +149,8 @@ Education: ${intake.education}${intake.fieldOfStudy ? ` (field: ${intake.fieldOf
 Experience: ${intake.experience || "(none provided)"}
 Self-taught skills: ${intake.selfTaughtSkills.join(", ") || "(none)"}
 Languages: ${intake.languages.join(", ") || "(none)"}
-Digital skill level: ${intake.digitalLevel}
+Digital tools: ${(intake.digitalSkills && intake.digitalSkills.length > 0) ? intake.digitalSkills.join(", ") : "(none reported)"}
+Certifications/training: ${intake.hasCertifications && intake.certificationsDescription ? intake.certificationsDescription : "None reported"}
 Other: ${intake.other || "(none)"}
 
 Country labor market (use these exact figures in your reasoning):

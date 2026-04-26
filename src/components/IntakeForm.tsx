@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import {
   COUNTRIES, SELF_TAUGHT_SKILLS, LANGUAGES, EDUCATION_LEVELS,
-  DIGITAL_LEVELS, LANGUAGE_PREFS, type CountryKey,
+  DIGITAL_SKILLS, LANGUAGE_PREFS, type CountryKey,
 } from "@/lib/countryData";
 import type { IntakeData } from "@/lib/types";
 import { ArrowLeft, ArrowRight } from "lucide-react";
@@ -21,7 +21,9 @@ interface Props {
 const EMPTY: IntakeData = {
   name: "", country: "Ghana", languagePref: "English",
   education: "", fieldOfStudy: "", experience: "",
-  selfTaughtSkills: [], languages: [], digitalLevel: "", other: "",
+  selfTaughtSkills: [], languages: [], digitalLevel: "",
+  digitalSkills: [], hasCertifications: false, certificationsDescription: "",
+  other: "",
 };
 
 export default function IntakeForm({ initial, onSubmit }: Props) {
@@ -31,7 +33,7 @@ export default function IntakeForm({ initial, onSubmit }: Props) {
   const update = <K extends keyof IntakeData>(k: K, v: IntakeData[K]) =>
     setData(d => ({ ...d, [k]: v }));
 
-  const toggle = (key: "selfTaughtSkills" | "languages", val: string) => {
+  const toggle = (key: "selfTaughtSkills" | "languages" | "digitalSkills", val: string) => {
     setData(d => {
       const arr = d[key];
       return { ...d, [key]: arr.includes(val) ? arr.filter(x => x !== val) : [...arr, val] };
@@ -42,7 +44,7 @@ export default function IntakeForm({ initial, onSubmit }: Props) {
     (step === 1 && data.country && data.languagePref) ||
     (step === 2 && data.education) ||
     (step === 3) ||
-    (step === 4 && data.digitalLevel);
+    (step === 4);
 
   const next = () => step < 4 ? setStep(step + 1) : onSubmit(data);
   const back = () => setStep(s => Math.max(1, s - 1));
@@ -101,6 +103,40 @@ export default function IntakeForm({ initial, onSubmit }: Props) {
               <Label>Field of study (optional)</Label>
               <Input value={data.fieldOfStudy} onChange={e => update("fieldOfStudy", e.target.value)} placeholder="e.g. business, engineering" />
             </div>
+            <div className="space-y-2">
+              <Label>Do you have any formal certifications, licenses, or training courses?</Label>
+              <p className="text-xs text-muted-foreground">
+                This includes vocational certificates, online course completions, trade licenses, driving permits, first aid training, or anything with a certificate — even if it's not from a school.
+              </p>
+              <div className="flex flex-wrap gap-2 pt-1">
+                {[
+                  { label: "Yes", val: true },
+                  { label: "No", val: false },
+                ].map(opt => {
+                  const active = data.hasCertifications === opt.val;
+                  return (
+                    <button
+                      type="button" key={opt.label}
+                      onClick={() => update("hasCertifications", opt.val)}
+                      className={`rounded-full border px-4 py-1.5 text-sm transition-colors ${
+                        active ? "border-primary bg-primary text-primary-foreground" : "border-border bg-background hover:bg-muted"
+                      }`}
+                    >{opt.label}</button>
+                  );
+                })}
+              </div>
+            </div>
+            {data.hasCertifications && (
+              <div className="space-y-2">
+                <Label>Describe your certifications or training</Label>
+                <Textarea
+                  rows={3}
+                  value={data.certificationsDescription}
+                  onChange={e => update("certificationsDescription", e.target.value)}
+                  placeholder="e.g. I completed a 3-month mobile phone repair course at a local training centre. I also have a motorcycle driving permit."
+                />
+              </div>
+            )}
           </div>
         )}
 
@@ -157,11 +193,24 @@ export default function IntakeForm({ initial, onSubmit }: Props) {
               </div>
             </div>
             <div className="space-y-2">
-              <Label>Digital skill level</Label>
-              <Select value={data.digitalLevel} onValueChange={v => update("digitalLevel", v)}>
-                <SelectTrigger><SelectValue placeholder="Select…" /></SelectTrigger>
-                <SelectContent>{DIGITAL_LEVELS.map(l => <SelectItem key={l} value={l}>{l}</SelectItem>)}</SelectContent>
-              </Select>
+              <Label>What digital tools do you use?</Label>
+              <p className="text-xs text-muted-foreground">
+                Select all that apply — even if you learned on your own.
+              </p>
+              <div className="flex flex-wrap gap-2 pt-1">
+                {DIGITAL_SKILLS.map(s => {
+                  const active = data.digitalSkills.includes(s);
+                  return (
+                    <button
+                      type="button" key={s}
+                      onClick={() => toggle("digitalSkills", s)}
+                      className={`rounded-full border px-3 py-1.5 text-sm transition-colors ${
+                        active ? "border-primary bg-primary text-primary-foreground" : "border-border bg-background hover:bg-muted"
+                      }`}
+                    >{s}</button>
+                  );
+                })}
+              </div>
             </div>
             <div className="space-y-2">
               <Label>Anything else? Community roles, caregiving, leadership</Label>
