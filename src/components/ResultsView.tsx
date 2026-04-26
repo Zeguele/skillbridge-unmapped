@@ -80,6 +80,16 @@ export default function ResultsView({ intake, policyIntake, profile, isDemo, use
 
       {view === "my" ? (
         <>
+          {/* Personal greeting */}
+          <div className="space-y-1">
+            <h1 className="text-2xl font-medium tracking-tight">
+              Hi {intake.name?.trim() ? intake.name.trim().split(/\s+/)[0] : "there"}
+            </h1>
+            <p className="text-sm text-muted-foreground">
+              Here's what your skills say about you — and what's out there for you.
+            </p>
+          </div>
+
           {/* Profile card */}
           <Card className="p-5 sm:p-6">
             <div className="flex items-start gap-4">
