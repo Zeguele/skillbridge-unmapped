@@ -372,6 +372,7 @@ const Index = ({ autoDemo }: IndexProps = {}) => {
             policyIntake={policyIntake ?? undefined}
             profile={profile}
             isDemo={isDemo}
+            isPolicyDemo={isPolicyDemo}
             userType={userType}
             onRestart={restart}
             onCountryChange={userType === "policy_officer" ? handlePolicyCountryChange : undefined}
