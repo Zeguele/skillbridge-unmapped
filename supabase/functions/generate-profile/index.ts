@@ -66,8 +66,11 @@ const PROFILE_TOOL = {
         signal2: { type: "string", description: "Returns to education + skills. World Bank STEP / ILO task indices." },
         wittgensteinSignal: { type: "string", description: "Wittgenstein Centre 2025-2035 education projection insight for region." },
         policySkillsGap: { type: "string" },
+        policySkillsGapSummary: { type: "string", description: "Exactly 2 sentences summarizing the skills gap." },
         policyInterventions: { type: "string" },
+        policyInterventionsSummary: { type: "string", description: "Exactly 2 sentences summarizing the recommended interventions." },
         policyDataLimits: { type: "string" },
+        policyDataLimitsSummary: { type: "string", description: "Exactly 2 sentences summarizing the data limitations." },
         recommendedTraining: {
           type: "array",
           description: "3-4 short, realistic training opportunities tailored to the user.",
