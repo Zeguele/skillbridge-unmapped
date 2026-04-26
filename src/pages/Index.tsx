@@ -375,7 +375,7 @@ const Index = ({ autoDemo }: IndexProps = {}) => {
             isPolicyDemo={isPolicyDemo}
             userType={userType}
             onRestart={restart}
-            onCountryChange={userType === "policy_officer" ? handlePolicyCountryChange : undefined}
+            onCountryChange={userType === "policy_officer" && !isPolicyDemo ? handlePolicyCountryChange : undefined}
             isReloading={isReloadingPolicy}
           />
         )}
