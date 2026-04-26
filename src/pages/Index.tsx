@@ -3,36 +3,60 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import IntakeForm from "@/components/IntakeForm";
+import PolicyIntakeForm from "@/components/PolicyIntakeForm";
 import LoadingScreen from "@/components/LoadingScreen";
 import ResultsView from "@/components/ResultsView";
 import { supabase } from "@/integrations/supabase/client";
 import { COUNTRY_DATA } from "@/lib/countryData";
 import { DEMO_INTAKE } from "@/lib/demoData";
-import type { IntakeData, Profile } from "@/lib/types";
+import type { IntakeData, PolicyIntakeData, Profile } from "@/lib/types";
 import { toast } from "sonner";
 import { Compass, ArrowLeft, UserRound, BarChart3, ArrowRight, Globe } from "lucide-react";
-import { LANGUAGES, useLang, getLanguage, type LanguageCode } from "@/lib/i18n";
+import { LANGUAGES, useLang, type LanguageCode } from "@/lib/i18n";
 
 type Stage = "role" | "form" | "loading" | "results";
 export type UserType = "job_seeker" | "policy_officer";
+
+function policyToIntake(p: PolicyIntakeData, languagePref: string): IntakeData {
+  // Synthesize a minimal IntakeData so downstream components that expect it
+  // (LaborDemandPanel uses country, ResultsView reads intake.country) keep working.
+  return {
+    name: "",
+    country: p.country,
+    languagePref,
+    education: "",
+    fieldOfStudy: "",
+    experience: "",
+    selfTaughtSkills: [],
+    languages: [],
+    digitalLevel: "",
+    digitalSkills: [],
+    hasCertifications: false,
+    certificationsDescription: "",
+    other: "",
+  };
+}
 
 const Index = () => {
   const { t, lang, setLang, option } = useLang();
   const [stage, setStage] = useState<Stage>("role");
   const [userType, setUserType] = useState<UserType>("job_seeker");
   const [intake, setIntake] = useState<IntakeData | null>(null);
+  const [policyIntake, setPolicyIntake] = useState<PolicyIntakeData | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [isDemo, setIsDemo] = useState(false);
   const [prefill, setPrefill] = useState<IntakeData | undefined>(undefined);
 
-  async function generate(data: IntakeData, demo: boolean) {
+  async function generateJobSeeker(data: IntakeData, demo: boolean) {
     const enriched: IntakeData = { ...data, languagePref: option.promptName };
     setIntake(enriched);
+    setPolicyIntake(null);
     setIsDemo(demo);
     setStage("loading");
     try {
       const { data: res, error } = await supabase.functions.invoke("generate-profile", {
         body: {
+          mode: "job_seeker",
           intake: enriched,
           countryStats: COUNTRY_DATA[enriched.country],
           languagePromptName: option.promptName,
@@ -51,10 +75,40 @@ const Index = () => {
     }
   }
 
+  async function generatePolicy(data: PolicyIntakeData) {
+    const enriched: PolicyIntakeData = { ...data, languagePref: option.promptName };
+    const synthIntake = policyToIntake(enriched, option.promptName);
+    setIntake(synthIntake);
+    setPolicyIntake(enriched);
+    setIsDemo(false);
+    setStage("loading");
+    try {
+      const { data: res, error } = await supabase.functions.invoke("generate-profile", {
+        body: {
+          mode: "policy",
+          policyIntake: enriched,
+          countryStats: COUNTRY_DATA[enriched.country],
+          languagePromptName: option.promptName,
+          languageCode: lang,
+        },
+      });
+      if (error) throw error;
+      if (res?.error) throw new Error(res.error);
+      if (!res?.profile) throw new Error("No analysis returned");
+      setProfile(res.profile as Profile);
+      setStage("results");
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : "Failed to generate analysis";
+      toast.error(msg);
+      setStage("form");
+    }
+  }
+
   const restart = () => {
     setStage("role");
     setProfile(null);
     setIntake(null);
+    setPolicyIntake(null);
     setIsDemo(false);
     setPrefill(undefined);
   };
@@ -67,7 +121,7 @@ const Index = () => {
 
   const startDemo = () => {
     setUserType("job_seeker");
-    generate(DEMO_INTAKE, true);
+    generateJobSeeker(DEMO_INTAKE, true);
   };
 
   return (
@@ -91,7 +145,6 @@ const Index = () => {
             )}
           </div>
           <div className="flex items-center gap-3">
-            {/* Language indicator + switcher (compact) */}
             <Select value={lang} onValueChange={(v) => setLang(v as LanguageCode)}>
               <SelectTrigger
                 className="h-8 w-auto gap-1.5 rounded-full border-border bg-background px-3 text-xs font-medium"
@@ -130,7 +183,6 @@ const Index = () => {
               </p>
             </div>
 
-            {/* Language selector for the whole experience */}
             <div className="mx-auto mb-6 max-w-sm rounded-lg border border-border bg-muted/40 p-3">
               <label className="mb-1.5 flex items-center justify-center gap-1.5 text-xs font-medium text-muted-foreground">
                 <Globe className="h-3.5 w-3.5" />
@@ -210,8 +262,12 @@ const Index = () => {
           </div>
         )}
 
-        {stage === "form" && (
-          <IntakeForm initial={prefill} onSubmit={d => generate(d, false)} />
+        {stage === "form" && userType === "job_seeker" && (
+          <IntakeForm initial={prefill} onSubmit={d => generateJobSeeker(d, false)} />
+        )}
+
+        {stage === "form" && userType === "policy_officer" && (
+          <PolicyIntakeForm onSubmit={generatePolicy} />
         )}
 
         {stage === "loading" && <LoadingScreen />}
@@ -219,6 +275,7 @@ const Index = () => {
         {stage === "results" && profile && intake && (
           <ResultsView
             intake={intake}
+            policyIntake={policyIntake ?? undefined}
             profile={profile}
             isDemo={isDemo}
             userType={userType}
