@@ -193,11 +193,24 @@ export default function IntakeForm({ initial, onSubmit }: Props) {
               </div>
             </div>
             <div className="space-y-2">
-              <Label>Digital skill level</Label>
-              <Select value={data.digitalLevel} onValueChange={v => update("digitalLevel", v)}>
-                <SelectTrigger><SelectValue placeholder="Select…" /></SelectTrigger>
-                <SelectContent>{DIGITAL_LEVELS.map(l => <SelectItem key={l} value={l}>{l}</SelectItem>)}</SelectContent>
-              </Select>
+              <Label>What digital tools do you use?</Label>
+              <p className="text-xs text-muted-foreground">
+                Select all that apply — even if you learned on your own.
+              </p>
+              <div className="flex flex-wrap gap-2 pt-1">
+                {DIGITAL_SKILLS.map(s => {
+                  const active = data.digitalSkills.includes(s);
+                  return (
+                    <button
+                      type="button" key={s}
+                      onClick={() => toggle("digitalSkills", s)}
+                      className={`rounded-full border px-3 py-1.5 text-sm transition-colors ${
+                        active ? "border-primary bg-primary text-primary-foreground" : "border-border bg-background hover:bg-muted"
+                      }`}
+                    >{s}</button>
+                  );
+                })}
+              </div>
             </div>
             <div className="space-y-2">
               <Label>Anything else? Community roles, caregiving, leadership</Label>
