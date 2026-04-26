@@ -10,9 +10,9 @@ import SkillRow from "./SkillRow";
 import JobsNearYou from "./JobsNearYou";
 import LaborDemandPanel from "./LaborDemandPanel";
 import RecommendedTraining from "./RecommendedTraining";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { toast } from "sonner";
-import { Copy, RefreshCw, AlertTriangle } from "lucide-react";
+import { Copy, RefreshCw, AlertTriangle, ChevronDown } from "lucide-react";
 
 interface Props {
   intake: IntakeData;
