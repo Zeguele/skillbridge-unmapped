@@ -225,15 +225,93 @@ const SKILL_TO_SECTORS: Record<string, string[]> = {
   "Transport/driving": ["Transportation"],
 };
 
-function pickSkillsEnsuringMin(rowCount: number): string[][] {
-  const need = new Map<string, number>(ALL_SKILLS.map(s => [s, 15]));
-  const rows: string[][] = [];
-  for (let i = 0; i < rowCount; i++) {
-    const n = randInt(1, 5);
-    const ranked = [...ALL_SKILLS].sort((a, b) => (need.get(b)! - need.get(a)!) + (rand() - 0.5) * 4);
-    const chosen = ranked.slice(0, n);
-    chosen.forEach(s => need.set(s, Math.max(0, need.get(s)! - 1)));
-    rows.push(chosen);
+// Per-country target counts (how many profiles should have each skill).
+// Top skill ≈ 3–4× the bottom skill so the bar chart tells a clear story.
+const SKILL_TARGETS: Record<"Ghana" | "Bangladesh", Record<string, number>> = {
+  Ghana: {
+    "Machine/device repair": 22,
+    "Customer service": 20,
+    "Social media": 18,
+    "Farming/agriculture": 16,
+    "Construction/building": 15,
+    "Food preparation": 14,
+    "Sewing/tailoring": 12,
+    "Accounting/bookkeeping": 10,
+    "Transport/driving": 9,
+    "Teaching/tutoring": 8,
+    "Basic coding": 6,
+    "Healthcare/first aid": 5,
+  },
+  Bangladesh: {
+    "Sewing/tailoring": 20,
+    "Food preparation": 16,
+    "Farming/agriculture": 14,
+    "Customer service": 12,
+    "Basic coding": 11,
+    "Social media": 10,
+    "Machine/device repair": 9,
+    "Construction/building": 8,
+    "Accounting/bookkeeping": 7,
+    "Teaching/tutoring": 7,
+    "Transport/driving": 6,
+    "Healthcare/first aid": 5,
+  },
+};
+
+function pickSkillsWeighted(country: "Ghana" | "Bangladesh", rowCount: number): string[][] {
+  // Build a bag of (skill, slot) tokens equal to each skill's target count, shuffle it,
+  // then deal tokens out into rows respecting per-row caps (1–5 skills, no duplicates).
+  const targets = SKILL_TARGETS[country];
+  const bag: string[] = [];
+  for (const [skill, n] of Object.entries(targets)) {
+    for (let i = 0; i < n; i++) bag.push(skill);
+  }
+  for (let i = bag.length - 1; i > 0; i--) {
+    const j = Math.floor(rand() * (i + 1));
+    [bag[i], bag[j]] = [bag[j], bag[i]];
+  }
+
+  // Per-row cap drawn from 1–5 with a bias toward the middle so we have headroom.
+  const caps: number[] = [];
+  for (let i = 0; i < rowCount; i++) caps.push(randInt(1, 5));
+  // Ensure total capacity ≥ bag size; bump caps until we fit.
+  let capacity = caps.reduce((a, b) => a + b, 0);
+  while (capacity < bag.length) {
+    const idx = Math.floor(rand() * rowCount);
+    if (caps[idx] < 5) { caps[idx]++; capacity++; }
+  }
+
+  const rows: string[][] = Array.from({ length: rowCount }, () => []);
+  for (const skill of bag) {
+    // Find a row that has room and doesn't already have this skill.
+    const order = Array.from({ length: rowCount }, (_, i) => i);
+    for (let i = order.length - 1; i > 0; i--) {
+      const j = Math.floor(rand() * (i + 1));
+      [order[i], order[j]] = [order[j], order[i]];
+    }
+    let placed = false;
+    for (const idx of order) {
+      if (rows[idx].length < caps[idx] && !rows[idx].includes(skill)) {
+        rows[idx].push(skill);
+        placed = true;
+        break;
+      }
+    }
+    if (!placed) {
+      // Fallback: relax the cap on any row missing this skill.
+      for (const idx of order) {
+        if (!rows[idx].includes(skill) && rows[idx].length < 5) {
+          rows[idx].push(skill);
+          break;
+        }
+      }
+    }
+  }
+
+  // Guarantee every row has at least 1 skill (fill from the rarest skill upward).
+  const sortedSkills = Object.entries(targets).sort((a, b) => a[1] - b[1]).map(([s]) => s);
+  for (const row of rows) {
+    if (row.length === 0) row.push(sortedSkills[0]);
   }
   return rows;
 }
